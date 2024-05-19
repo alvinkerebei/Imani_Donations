@@ -1,12 +1,19 @@
 from flask import Flask, render_template
+import pymongo
 
-print("flask is running...")
+app=Flask(__name__) #app here is an instance of flask
 
-app = Flask(__name__)
+#database
+client = pymongo.MongoClient('localhost',27017)
+db = client.imanidonationdb
 
-@app.route('/')
-def index():
-    return render_template('base.html')
+#the routes
+from donor import routes
 
-if __name__ == "__main__":
-    app.run(debug=True)
+@app.route('/') #route of the file
+def home(): #name of function
+    return render_template('home.html')
+
+@app.route('/org-registration/') #route of the file
+def registrationorrg(): #name of function
+    return render_template('home.html')
