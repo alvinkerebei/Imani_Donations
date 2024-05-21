@@ -1,7 +1,15 @@
 from flask import Flask
-from app import app #from app.py you import app(the instance)
-from donor.models import Donor #from user dir, import models.py then import class User
+from app import app
+from donor.models import Donor
 
-@app.route('/donor/signup',methods=['POST', 'GET'])
+@app.route('/donor/signup', methods=['POST'])
 def signup():
-    return Donor().signup() #creates a new class instance
+  return Donor().signup()
+
+@app.route('/donor/signout')
+def signout():
+  return Donor().signout()
+
+@app.route('/donor/login', methods=['POST'])
+def login():
+  return Donor().login()
