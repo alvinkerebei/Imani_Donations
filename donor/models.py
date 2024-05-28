@@ -37,6 +37,8 @@ class Donor:
         donor['verification_token'] = token
         donor['totp_secret'] = secret
 
+        send_mail(donor['email'], 'App Verification', f'Find your link here:{token}')
+
         if db.donor.insert_one(donor):
             return self.start_session(donor)
         
@@ -53,7 +55,8 @@ class Donor:
         if donor and pbkdf2_sha256.verify(request.form.get('password'), donor['password']):
             if donor['verified']:
                 return self.start_session(donor)
-    
+        else:
+            return jsonify({ "error": "Email not verified. Please check your email." })
         return jsonify({ "error": "Invalid login credentials" }), 401
 
     # def create_token(self, expires_in=5000):
