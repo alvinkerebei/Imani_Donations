@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card-wrapper">
+
+<div class="card">
+
+    <h1 class="center">Enter your Token</h1>
+
+    <form name="resettoken_form" method="POST, GET" action="{{url_for('resettoken')}}">
+
+      <label for="email">Enter token</label>
+      <input type="email" name="email" class="field" required>
+
+      <p class="error error--hidden"></p>
+
+      <input type="submit" value="Send Code" class="btn">
+    
+    </form>
+    
+  </div>
+
+</div>
+
+{% endblock %}

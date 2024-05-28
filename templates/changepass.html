@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card-wrapper">
+
+<div class="card">
+
+    <h1 class="center">Reset Password</h1>
+
+    <form name="changepass_form" method="POST, GET" action="/donor/reset_pass">
+
+      <label for="password">Password</label>
+      <input type="password" name="password" class="field" required>
+
+      <label for="password">Confirm Password</label>
+      <input type="password" name="password" class="field" required>
+
+      <p class="error error--hidden"></p>
+
+      <input type="submit" value="Reset" class="btn">
+    
+    </form>
+    
+  </div>
+
+</div>
+
+{% endblock %}
