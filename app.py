@@ -5,10 +5,21 @@ from functools import wraps
 from flask_mail import Mail, Message
 import pymongo, os
 import pyotp
+from flask import Flask, flash, render_template
+from email.mime.text import MIMEText
+import smtplib
+from flask import Flask, jsonify, request, session, redirect, url_for
+from passlib.hash import pbkdf2_sha256
+import pyotp
+import uuid
+from itsdangerous import URLSafeTimedSerializer as Serializer
+from flask_mail import Message  
 
 app = Flask(__name__)
 
-app.config['SECRET_KEY']= '9272db82db33bbefff713184ca1dfcbe'
+
+
+app.secret_key= '6c9d66617a40fccb1e64d4a52be26562'
 
 EMAIL_ADDRESS='kerebeialvin69@gmail.com'
 EMAIL_PASSWORD='yfan yhnw kere obsr'
@@ -43,17 +54,6 @@ def reset_token(self):
 
     return render_template ('reset_token.html')
 
-def generate_verification_token(email):
-    totp = pyotp.TOTP(pyotp.random_base32(), interval=600)  # Token valid for 10 minutes
-    return totp.now(), totp.secret
-
-def send_verification_email(email, token):
-    msg = Message('Email Verification', sender='kerebeialvin69@gmail.com', recipients=[email])
-    link = url_for('verify_email', token=token, _external=True)
-    msg.body = f'Your verification link is {link}'
-    mail.send(msg)
-
-
 # Database
 client = pymongo.MongoClient('localhost', 27017)
 db = client.imanidonationdb
@@ -68,40 +68,114 @@ def login_required(f):
   
   return wrap
 
-# Routes
-from donor import routes
-
 @app.route('/')
 def home():
-  return render_template('home.html')
+  return render_template('index.html')
 
 @app.route('/donordash/')
 @login_required
 def donordash():
   return render_template('donordash.html')
 
-@app.route('/reset_pass')
-def resetpass():
-  return render_template('reset_pass.html')
 
-@app.route('/verify_email/<token>', methods=['GET'])
-def verify_email(token):
-    donor = db.donor.find_one({ "verification_token": token })
-    if donor:
-        # Verify the token
-        totp = pyotp.TOTP(donor['totp_secret'])
-        if totp.verify(token):
-            # Update the user's status to verified
-            db.donor.update_one({ "_id": donor['_id'] }, { "$set": { "verified": True }, "$unset": { "verification_token": "", "totp_secret": "" } })
-            flash('Your email has been verified. You can now log in.', 'success')
-            return redirect(url_for('login'))
+
+@app.route('/donor/signup', methods=['POST','GET'])
+def signup():
+    if request.method == "POST":
+# Create the user object
+        donor = {
+        "_id": uuid.uuid4().hex,
+        "name": request.form.get('name'),
+        "email": request.form.get('email'),
+        "password": request.form.get('password')
+        }
+
+    # Encrypt the password
+        donor['password'] = pbkdf2_sha256.hash(donor['password'])
+
+        if not donor.get('email') or not donor.get('name') or not donor.get('password'):
+            flash("All fields are required.", "error")
+            return redirect(url_for('signup'))
+
+        if db.donor.find_one({"$or": [{"email": donor['email']}, {"name": donor['name']}]}):
+            flash("Username or Email is already in use.", "error")
+            return redirect(url_for('signup'))
         else:
-            flash('Invalid or expired verification link.', 'error')
-    else:
-        flash('Invalid verification link.', 'error')
+            # Insert the new user into the 'customer' collection in the database.
+            db.donor.insert_one(donor)
+            flash("Signup is a Success! Check your email for OTP.", "success")
+            totp_secret = pyotp.random_base32()
+            totp = pyotp.TOTP(totp_secret).now()
+            send_mail(donor['email'], 'Account Activation OTP', f'Your OTP is:{totp_secret}' )
+            session['logged_in'] = True
+            session['donor'] = donor['email']
+            session['totp_secret'] = totp_secret
+            return redirect(url_for('verifyotp'))
+        
+    return render_template('signup.html')
 
-    return redirect(url_for('signup'))
+@app.route('/donor/verifyotp', methods=['POST','GET'])
+def verifyotp():
+ if 'donor' not in session:
+     return redirect(url_for('signup'))
+ 
+ if request.method == 'POST':
+        donor_otp = request.form.get('otp')
+        email = session['donor']
+        totp_secret = session['totp_secret']
+        print(f"Form OTP: {donor_otp}")
+        print(f"Session Email: {email}")
+        print(f"Session TOTP Secret: {totp_secret}")
+        donor = db.donor.find_one({"email": email})
 
+        if donor:
+            totp = pyotp.TOTP(totp_secret)
+            if totp == donor_otp:
+                flash("OTP is correct! You may now login", 'success')
+                return redirect(url_for('login'))
+            else:
+                flash("Invalid OTP.",'error')
+        flash()
+
+ return render_template('verify_otp.html')
+
+@app.route('/donor/login', methods=['POST','GET'])
+def login():
+
+    if request.method == "POST":
+        donor = db.donor.find_one({"email": request.form.get('email') })
+
+        if donor and pbkdf2_sha256.verify(request.form.get('password'), donor['password']):
+            if donor['verified']:
+                return None
+        else:
+            return jsonify({ "error": "Email not verified. Please check your email." })
+        return jsonify({ "error": "Invalid login credentials" }), 401
+
+    return render_template('login.html')
+
+@app.route('/donor/signout')
+def signout(self):
+    session.clear()
+    return redirect('/')
+
+# @app.route('/donor/reset_pass', methods=['POST', 'GET'])
+# def reset_pass(self):
+
+#     email = request.form.get('email')        
+#     donor = db.donor.find_one({"email": email})  # Adjust collection name if necessary
+
+#     if not email:
+#         return jsonify({"error": "Invalid Email"})
+#     else:
+#         totp_secret = pyotp.random_base32()
+#         totp = pyotp.TOTP(totp_secret)
+#         otp=totp.now()
+#         send_mail(donor['email'], 'Password Reset OTP', f'Your OTP is:{otp}' )
+#         session['reset_pass'] = email
+#         session['totp_secret'] = totp_secret
+
+#         return redirect(url_for(''))
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -176,3 +176,18 @@ input[type=submit] {
   margin: 34px auto 24px;
   display: block;
 }
+
+.flashed-messages {
+  list-style-type: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.flashed-messages li {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
