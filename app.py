@@ -16,10 +16,7 @@ from itsdangerous import URLSafeTimedSerializer as Serializer
 from flask_mail import Message  
 
 app = Flask(__name__)
-
-
-
-app.secret_key= '6c9d66617a40fccb1e64d4a52be26562'
+app.secret_key= 'alvinsecretkey'
 
 EMAIL_ADDRESS='kerebeialvin69@gmail.com'
 EMAIL_PASSWORD='yfan yhnw kere obsr'
@@ -34,25 +31,6 @@ def send_mail(to_address, subject, body):
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
         server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
         server.sendmail(EMAIL_ADDRESS, to_address, msg.as_string())
-
-def reset_token(self):
-    if 'reset_pass' not in session:
-        return redirect(url_for('reset_token'))
-    
-    if request.method == 'POST':
-        otp = request.form.get('otp')
-        email = session['reset_pass']
-        totp_secret = session['top_secret']
-        donor = db.donor.find_one ({"email": email})
-
-        if donor:
-            totp = pyotp.TOTP(totp_secret)
-            if totp.verify(otp):
-                return redirect(url_for('changepass'))
-            else:
-                flash('invalid OTP', 'error')
-
-    return render_template ('reset_token.html')
 
 # Database
 client = pymongo.MongoClient('localhost', 27017)
@@ -79,83 +57,130 @@ def donordash():
 
 
 
-@app.route('/donor/signup', methods=['POST','GET'])
+@app.route('/donor/signup', methods=['POST', 'GET'])
 def signup():
     if request.method == "POST":
-# Create the user object
-        donor = {
-        "_id": uuid.uuid4().hex,
-        "name": request.form.get('name'),
-        "email": request.form.get('email'),
-        "password": request.form.get('password')
-        }
+        name = request.form.get('name')
+        email = request.form.get('email')
+        password = request.form.get('password')
 
-    # Encrypt the password
-        donor['password'] = pbkdf2_sha256.hash(donor['password'])
-
-        if not donor.get('email') or not donor.get('name') or not donor.get('password'):
+        if not email or not name or not password:
             flash("All fields are required.", "error")
             return redirect(url_for('signup'))
 
-        if db.donor.find_one({"$or": [{"email": donor['email']}, {"name": donor['name']}]}):
+        donor = {
+            "_id": uuid.uuid4().hex,
+            "name": name,
+            "email": email,
+            "password": pbkdf2_sha256.hash(password)
+        }
+
+        if db.donor.find_one({"$or": [{"email": email}, {"name": name}]}):
             flash("Username or Email is already in use.", "error")
             return redirect(url_for('signup'))
-        else:
-            # Insert the new user into the 'customer' collection in the database.
-            db.donor.insert_one(donor)
-            flash("Signup is a Success! Check your email for OTP.", "success")
-            totp_secret = pyotp.random_base32()
-            totp = pyotp.TOTP(totp_secret).now()
-            send_mail(donor['email'], 'Account Activation OTP', f'Your OTP is:{totp_secret}' )
-            session['logged_in'] = True
-            session['donor'] = donor['email']
-            session['totp_secret'] = totp_secret
-            return redirect(url_for('verifyotp'))
+
+        db.donor.insert_one(donor)
+        flash("Signup is a Success! Check your email for OTP.", "success")
         
+        totp_secret = pyotp.random_base32()
+        totp = pyotp.TOTP(totp_secret)
+        otp = totp.now()
+
+        send_mail(email, 'Account Activation OTP', f'Your OTP is: {otp}')
+        
+        session['logged_in'] = True
+        session['signup'] = email
+        session['totp_secret'] = totp_secret
+        session['name'] = name
+
+        # Debug logging
+        print(f"Signup - Email: {session['signup']}, TOTP Secret: {session['totp_secret']}")
+
+        return redirect(url_for('verifyotp'))
+
     return render_template('signup.html')
 
-@app.route('/donor/verifyotp', methods=['POST','GET'])
+
+@app.route('/donor/verifyotp', methods=['POST', 'GET'])
 def verifyotp():
- if 'donor' not in session:
-     return redirect(url_for('signup'))
- 
- if request.method == 'POST':
+    if 'signup' not in session:
+        flash("Not in session", 'error')
+        return redirect(url_for('signup'))
+
+    if request.method == 'POST':
         donor_otp = request.form.get('otp')
-        email = session['donor']
-        totp_secret = session['totp_secret']
-        print(f"Form OTP: {donor_otp}")
-        print(f"Session Email: {email}")
-        print(f"Session TOTP Secret: {totp_secret}")
+        email = session.get('signup')
+        totp_secret = session.get('totp_secret')
+        
+        # Debug logging
+        print(f"Verify OTP - Form OTP: {donor_otp}")
+        print(f"Verify OTP - Session Email: {email}")
+        print(f"Verify OTP - Session TOTP Secret: {totp_secret}")
+
         donor = db.donor.find_one({"email": email})
 
-        if donor:
-            totp = pyotp.TOTP(totp_secret)
-            if totp == donor_otp:
-                flash("OTP is correct! You may now login", 'success')
-                return redirect(url_for('login'))
-            else:
-                flash("Invalid OTP.",'error')
-        flash()
+        if not donor:
+            flash("Email doesn't exist", 'error')
+            return redirect(url_for('signup'))
 
- return render_template('verify_otp.html')
+        totp = pyotp.TOTP(totp_secret)
+        if totp.verify(donor_otp, valid_window=1):
+            flash("OTP is correct! You may now login", 'success')
+            return redirect(url_for('login'))
+        else:
+            flash("Invalid OTP.", 'error')
+
+    return render_template('verify_otp.html')
 
 @app.route('/donor/login', methods=['POST','GET'])
 def login():
-
     if request.method == "POST":
-        donor = db.donor.find_one({"email": request.form.get('email') })
+        email = request.form.get('email')
+        password = request.form.get('password')
+        donor = db.donor.find_one({"email": email })
 
-        if donor and pbkdf2_sha256.verify(request.form.get('password'), donor['password']):
-            if donor['verified']:
-                return None
+        if donor and pbkdf2_sha256.verify(password, donor['password']):
+            totp_secret = pyotp.random_base32()
+            totp = pyotp.TOTP(totp_secret)
+            otp = totp.now()
+
+            session['totp_secret'] = totp_secret
+            session['logged_in'] = True
+            session['login'] = email
+
+            send_mail(email, 'Login Verification Code:', f'Your Verification Code is: {otp}')
+            
+            flash("Check Email for Verification Code",'success')
+            return redirect(url_for('twoFA'))
         else:
-            return jsonify({ "error": "Email not verified. Please check your email." })
-        return jsonify({ "error": "Invalid login credentials" }), 401
+            flash("Invalid Email or Password", 'error')
+
 
     return render_template('login.html')
 
+@app.route('/donor/twoFA', methods=['POST', 'GET'])
+def twoFA():
+    if 'login' not in session:
+        flash("Not in session", 'error')
+        return redirect(url_for('login'))
+    else:
+        if request.method == 'POST':
+            donor_otp = request.form.get('otp')
+            totp_secret = session['totp_secret']
+            print(f"Form OTP: {donor_otp}")
+            print(f"Session TOTP Secret: {totp_secret}")    
+
+            totp = pyotp.TOTP(totp_secret)
+            if totp.verify(donor_otp, valid_window=1):
+                flash("Verification Complete!", 'success')
+                return redirect(url_for('donordash'))
+            else:
+                flash("Invalid OTP", 'error')
+
+    return render_template('twoFA.html')
+
 @app.route('/donor/signout')
-def signout(self):
+def signout():
     session.clear()
     return redirect('/')
 
