@@ -6,14 +6,12 @@
 
 <div class="card">
 
-    <h1 class="center">Enter your Token</h1>
+    <h1 class="center">Enter your Email</h1>
 
-    <form name="resettoken_form" method="POST, GET" action="{{url_for('resettoken')}}">
+    <form name="forgot_pass_form" method="POST" action="{{url_for('forgot_pass')}}">
 
-      <label for="email">Enter token</label>
+      <label for="email">Email</label>
       <input type="email" name="email" class="field" required>
-
-      <p class="error error--hidden"></p>
 
       <input type="submit" value="Send Code" class="btn">
     

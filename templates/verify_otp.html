@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card-wrapper">
+
+<div class="card">
+
+    <h1 class="center">Enter your OTP</h1>
+
+    <form name="verifyotp_form" method="POST" action="{{url_for('verifyotp')}}">
+
+      <label for="otp">Enter OTP</label>
+      <input type="text" id="otp" name="otp" class="field" required>
+
+      <input type="submit" value="Send Code" class="btn">
+    
+    </form>
+    
+  </div>
+
+</div>
+
+{% endblock %}

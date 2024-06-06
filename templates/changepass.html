@@ -8,15 +8,13 @@
 
     <h1 class="center">Reset Password</h1>
 
-    <form name="changepass_form" method="POST, GET" action="/donor/reset_pass">
+    <form name="changepass_form" method="POST" action="{{url_for('changepass')}}">
 
-      <label for="password">Password</label>
-      <input type="password" name="password" class="field" required>
+      <label for="newpassword">New Password</label>
+      <input type="password" name="newpassword" class="field" required>
 
-      <label for="password">Confirm Password</label>
-      <input type="password" name="password" class="field" required>
-
-      <p class="error error--hidden"></p>
+      <label for="cpassword">Confirm Password</label>
+      <input type="password" name="cpassword" class="field" required>
 
       <input type="submit" value="Reset" class="btn">
     

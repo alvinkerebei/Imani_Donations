@@ -20,32 +20,10 @@
 
             <div class="error error--hidden"></div>
 
-            <a href="{{url_for('signup')}}"class="btn--secondary" type="submit">Sign Up</a>
+            <input type="submit" value="Sign Up" class="btn">
 
         </form>
     </div>
 
-    <div class="card">
 
-        <h1 class="center">Log In</h1>
-  
-        <form name="login_form">
-  
-          <label for="email">Email</label>
-          <input type="email" name="email" class="field" required>
-  
-          <label for="password">Password</label>
-          <input type="password" name="password" class="field" required>
-  
-          <p class="error error--hidden"></p>
-
-          <a href="{{url_for('resetpass')}}">Forgot password?</a>
-  
-          <input type="submit" value="Log In" class="btn">
-        
-        </form>
-        
-      </div>
-
-</div>
 {% endblock %}
