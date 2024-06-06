@@ -8,14 +8,12 @@
 
     <h1 class="center">Enter your Email</h1>
 
-    <form name="resetpass_form" method="POST, GET" action="{{url_for('')}}">
+    <form name="forgot_pass_form" method="POST" action="{{url_for('forgot_pass')}}">
 
       <label for="email">Email</label>
       <input type="email" name="email" class="field" required>
 
-      <p class="error error--hidden"></p>
-
-      <input  href="reset_token.html" type="submit" value="Send Code" class="btn">
+      <input type="submit" value="Send Code" class="btn">
     
     </form>
     

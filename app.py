@@ -146,7 +146,11 @@ def login():
 
             session['totp_secret'] = totp_secret
             session['logged_in'] = True
-            session['login'] = email
+            session['login'] = {
+                '_id': donor['_id'],
+                'name': donor['name'],
+                'email': donor['email']
+            }
 
             send_mail(email, 'Login Verification Code:', f'Your Verification Code is: {otp}')
             
@@ -179,28 +183,82 @@ def twoFA():
 
     return render_template('twoFA.html')
 
+@app.route('/donor/forgot_pass', methods=['POST', 'GET'])
+def forgot_pass():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        donor = db.donor.find_one({"email": email})
+
+        if donor:
+            totp_secret = pyotp.random_base32()
+            totp = pyotp.TOTP(totp_secret)
+            otp = totp.now()
+
+            session['totp_secret'] = totp_secret
+            session['forgotpass'] = email
+
+            send_mail(donor['email'], 'Password Reset Code', f"Your reset code is: {otp}") 
+
+            flash("Password Reset Code has been sent to your Email")
+            return redirect(url_for('verify_forgotpass'))
+        else:
+            flash ("Invalid Email", 'error')
+            return redirect(url_for('login'))
+    
+    elif request.method == 'GET':
+        return render_template('forgot_pass.html')
+
+    return render_template('forgot_pass.html')
+
+@app.route('/donor/verify_forgotpass', methods = ['POST', 'GET'])
+def verify_forgotpass():
+    if 'forgotpass' not in session:
+        flash('Not in Session', 'error')
+        return redirect(url_for('forgot_pass'))
+    else:
+        if request.method == 'POST':
+            donor_otp = request.form.get('otp')
+            totp_secret = session['totp_secret']
+            print(f"Form OTP: {donor_otp}")
+            print(f"Session TOTP Secret: {totp_secret}")   
+
+            totp = pyotp.TOTP(totp_secret)
+            if totp.verify(donor_otp, valid_window=1):
+                flash("Reset Code is Valid... You may Change Your Password", 'success')
+                return redirect(url_for('changepass'))
+            else:
+                flash("Invalid Code", 'error')
+
+    return render_template('verify_forgotpass.html')
+
+@app.route('/donor/changepass', methods=['POST','GET'])
+def changepass():
+    if 'forgotpass' not in session:
+        flash('Not in Session', 'error')
+        return redirect(url_for('forgot_pass'))
+    else:
+        if request.method == 'POST':
+            newPassword = request.form.get('newpassword')
+            confirmPassword = request.form.get('cpassword')
+            
+            email = session['forgotpass']
+
+            if newPassword != confirmPassword:
+                flash("Password DO NOT Match!", 'error')
+            else:
+                hashedPass = pbkdf2_sha256.hash(newPassword)
+                db.donor.update_one({'email': email},{'$set': {'password': hashedPass}})
+                flash("Password Reset Successfully. Login with your new Password", 'success')
+
+                session.pop('forgotpass', None)
+                return redirect('login')
+
+    return render_template('changepass.html')
+
 @app.route('/donor/signout')
 def signout():
     session.clear()
     return redirect('/')
-
-# @app.route('/donor/reset_pass', methods=['POST', 'GET'])
-# def reset_pass(self):
-
-#     email = request.form.get('email')        
-#     donor = db.donor.find_one({"email": email})  # Adjust collection name if necessary
-
-#     if not email:
-#         return jsonify({"error": "Invalid Email"})
-#     else:
-#         totp_secret = pyotp.random_base32()
-#         totp = pyotp.TOTP(totp_secret)
-#         otp=totp.now()
-#         send_mail(donor['email'], 'Password Reset OTP', f'Your OTP is:{otp}' )
-#         session['reset_pass'] = email
-#         session['totp_secret'] = totp_secret
-
-#         return redirect(url_for(''))
 
 if __name__ == "__main__":
     app.run(debug=True)
