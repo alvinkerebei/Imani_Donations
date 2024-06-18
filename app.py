@@ -53,12 +53,17 @@ def home():
 @app.route('/donordash/')
 @login_required
 def donordash():
-  return render_template('donordash.html')
+  return render_template('dash.html')
+
+@app.route('/doneedash/')
+@login_required
+def doneedash():
+  return render_template('dash.html')
 
 
 
-@app.route('/donor/signup', methods=['POST', 'GET'])
-def signup():
+@app.route('/donor/donor_signup', methods=['POST', 'GET'])
+def donor_signup():
     if request.method == "POST":
         name = request.form.get('name')
         email = request.form.get('email')
@@ -77,7 +82,7 @@ def signup():
 
         if db.donor.find_one({"$or": [{"email": email}, {"name": name}]}):
             flash("Username or Email is already in use.", "error")
-            return redirect(url_for('signup'))
+            return redirect(url_for('donor_signup'))
 
         db.donor.insert_one(donor)
         flash("Signup is a Success! Check your email for OTP.", "success")
@@ -89,27 +94,27 @@ def signup():
         send_mail(email, 'Account Activation OTP', f'Your OTP is: {otp}')
         
         session['logged_in'] = True
-        session['signup'] = email
+        session['donor_signup'] = email
         session['totp_secret'] = totp_secret
         session['name'] = name
 
         # Debug logging
-        print(f"Signup - Email: {session['signup']}, TOTP Secret: {session['totp_secret']}")
+        print(f"Signup - Email: {session['donor_signup']}, TOTP Secret: {session['totp_secret']}")
 
         return redirect(url_for('verifyotp'))
 
-    return render_template('signup.html')
+    return render_template('signup.html', form_action=url_for('donor_signup'))
 
 
 @app.route('/donor/verifyotp', methods=['POST', 'GET'])
 def verifyotp():
-    if 'signup' not in session:
+    if 'donor_signup' not in session:
         flash("Not in session", 'error')
-        return redirect(url_for('signup'))
+        return redirect(url_for('donor_signup'))
 
     if request.method == 'POST':
         donor_otp = request.form.get('otp')
-        email = session.get('signup')
+        email = session.get('donor_signup')
         totp_secret = session.get('totp_secret')
         
         # Debug logging
@@ -121,7 +126,7 @@ def verifyotp():
 
         if not donor:
             flash("Email doesn't exist", 'error')
-            return redirect(url_for('signup'))
+            return redirect(url_for('donor_signup'))
 
         totp = pyotp.TOTP(totp_secret)
         if totp.verify(donor_otp, valid_window=1):
@@ -130,10 +135,10 @@ def verifyotp():
         else:
             flash("Invalid OTP.", 'error')
 
-    return render_template('verify_otp.html')
+    return render_template('verify_otp.html', form_action=url_for('verifyotp'))
 
-@app.route('/donor/login', methods=['POST','GET'])
-def login():
+@app.route('/donor/donor_login', methods=['POST','GET'])
+def donor_login():
     if request.method == "POST":
         email = request.form.get('email')
         password = request.form.get('password')
@@ -146,7 +151,7 @@ def login():
 
             session['totp_secret'] = totp_secret
             session['logged_in'] = True
-            session['login'] = {
+            session['donor_login'] = {
                 '_id': donor['_id'],
                 'name': donor['name'],
                 'email': donor['email']
@@ -160,13 +165,13 @@ def login():
             flash("Invalid Email or Password", 'error')
 
 
-    return render_template('login.html')
+    return render_template('login.html', form_action=url_for('donor_login'), forgot_pass_url=url_for('forgot_pass'))
 
 @app.route('/donor/twoFA', methods=['POST', 'GET'])
 def twoFA():
-    if 'login' not in session:
+    if 'donor_login' not in session:
         flash("Not in session", 'error')
-        return redirect(url_for('login'))
+        return redirect(url_for('donor_login'))
     else:
         if request.method == 'POST':
             donor_otp = request.form.get('otp')
@@ -181,7 +186,7 @@ def twoFA():
             else:
                 flash("Invalid OTP", 'error')
 
-    return render_template('twoFA.html')
+    return render_template('twoFA.html', form_action=url_for('twoFA'))
 
 @app.route('/donor/forgot_pass', methods=['POST', 'GET'])
 def forgot_pass():
@@ -203,12 +208,12 @@ def forgot_pass():
             return redirect(url_for('verify_forgotpass'))
         else:
             flash ("Invalid Email", 'error')
-            return redirect(url_for('login'))
+            return redirect(url_for('donor_login'))
     
     elif request.method == 'GET':
         return render_template('forgot_pass.html')
 
-    return render_template('forgot_pass.html')
+    return render_template('forgot_pass.html', form_action=url_for('forgot_pass'))
 
 @app.route('/donor/verify_forgotpass', methods = ['POST', 'GET'])
 def verify_forgotpass():
@@ -229,7 +234,7 @@ def verify_forgotpass():
             else:
                 flash("Invalid Code", 'error')
 
-    return render_template('verify_forgotpass.html')
+    return render_template('verify_forgotpass.html', form_action=url_for('verify_forgotpass'))
 
 @app.route('/donor/changepass', methods=['POST','GET'])
 def changepass():
@@ -251,12 +256,213 @@ def changepass():
                 flash("Password Reset Successfully. Login with your new Password", 'success')
 
                 session.pop('forgotpass', None)
-                return redirect('login')
+                return redirect('donor_login')
 
-    return render_template('changepass.html')
+    return render_template('changepass.html', form_action=url_for('changepass'))
 
 @app.route('/donor/signout')
 def signout():
+    session.clear()
+    return redirect('/')
+
+#DONEE BACKEND
+
+@app.route('/donee/donee_signup', methods=['POST', 'GET'])
+def donee_signup():
+    if request.method == "POST":
+        name = request.form.get('name')
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        if not email or not name or not password:
+            flash("All fields are required.", "error")
+            return redirect(url_for('donee_signup'))
+
+        donee = {
+            "_id": uuid.uuid4().hex,
+            "name": name,
+            "email": email,
+            "password": pbkdf2_sha256.hash(password)
+        }
+
+        if db.donee.find_one({"$or": [{"email": email}, {"name": name}]}):
+            flash("Username or Email is already in use.", "error")
+            return redirect(url_for('donee_signup'))
+
+        db.donee.insert_one(donee)
+        flash("Signup is a Success! Check your email for OTP.", "success")
+        
+        totp_secret = pyotp.random_base32()
+        totp = pyotp.TOTP(totp_secret)
+        otp = totp.now()
+
+        send_mail(email, 'Account Activation OTP', f'Your OTP is: {otp}')
+        
+        session['logged_in'] = True
+        session['donee_signup'] = email
+        session['totp_secret'] = totp_secret
+        session['name'] = name
+
+        # Debug logging
+        print(f"Signup - Email: {session['donee_signup']}, TOTP Secret: {session['totp_secret']}")
+
+        return redirect(url_for('verifyotp2'))
+
+    return render_template('signup.html', form_action=url_for('donee_signup'))
+
+@app.route('/donee/verifyotp2', methods=['POST', 'GET'])
+def verifyotp2():
+    if 'donee_signup' not in session:
+        flash("Not in session", 'error')
+        return redirect(url_for('donee_signup'))
+
+    if request.method == 'POST':
+        donee_otp = request.form.get('otp')
+        email = session.get('donee_signup')
+        totp_secret = session.get('totp_secret')
+        
+        # Debug logging
+        print(f"Verify OTP - Form OTP: {donee_otp}")
+        print(f"Verify OTP - Session Email: {email}")
+        print(f"Verify OTP - Session TOTP Secret: {totp_secret}")
+
+        donee = db.donee.find_one({"email": email})
+
+        if not donee:
+            flash("Email doesn't exist", 'error')
+            return redirect(url_for('donee_signup'))
+
+        totp = pyotp.TOTP(totp_secret)
+        if totp.verify(donee_otp, valid_window=1):
+            flash("OTP is correct! You may now login", 'success')
+            return redirect(url_for('donee_login'))
+        else:
+            flash("Invalid OTP.", 'error')
+
+    return render_template('verify_otp.html', form_action=url_for('verifyotp2'))
+
+@app.route('/donee/donee_login', methods=['POST','GET'])
+def donee_login():
+    if request.method == "POST":
+        email = request.form.get('email')
+        password = request.form.get('password')
+        donee = db.donee.find_one({"email": email })
+
+        if donee and pbkdf2_sha256.verify(password, donee['password']):
+            totp_secret = pyotp.random_base32()
+            totp = pyotp.TOTP(totp_secret)
+            otp = totp.now()
+
+            session['totp_secret'] = totp_secret
+            session['logged_in'] = True
+            session['donee_login'] = {
+                '_id': donee['_id'],
+                'name': donee['name'],
+                'email': donee['email']
+            }
+
+            send_mail(email, 'Login Verification Code:', f'Your Verification Code is: {otp}')
+            
+            flash("Check Email for Verification Code",'success')
+            return redirect(url_for('twoFA2'))
+        else:
+            flash("Invalid Email or Password", 'error')
+
+    return render_template('login.html', form_action=url_for('donee_login'), forgot_pass_url=url_for('forgot_pass2'))
+
+@app.route('/donee/twoFA2', methods=['POST', 'GET'])
+def twoFA2():
+    if 'donee_login' not in session:
+        flash("Not in session", 'error')
+        return redirect(url_for('donee_login'))
+    else:
+        if request.method == 'POST':
+            donee_otp = request.form.get('otp')
+            totp_secret = session['totp_secret']
+            print(f"Form OTP: {donee_otp}")
+            print(f"Session TOTP Secret: {totp_secret}")    
+
+            totp = pyotp.TOTP(totp_secret)
+            if totp.verify(donee_otp, valid_window=1):
+                flash("Verification Complete!", 'success')
+                return redirect(url_for('doneedash'))
+            else:
+                flash("Invalid OTP", 'error')
+
+    return render_template('twoFA.html', form_action=url_for('twoFA2'))
+
+@app.route('/donee/forgot_pass2', methods=['POST', 'GET'])
+def forgot_pass2():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        donee = db.donee.find_one({"email": email})
+
+        if donee:
+            totp_secret = pyotp.random_base32()
+            totp = pyotp.TOTP(totp_secret)
+            otp = totp.now()
+
+            session['totp_secret'] = totp_secret
+            session['forgotpass2'] = email
+
+            send_mail(donee['email'], 'Password Reset Code', f"Your reset code is: {otp}") 
+
+            flash("Password Reset Code has been sent to your Email")
+            return redirect(url_for('verify_forgotpass2'))
+        else:
+            flash ("Invalid Email", 'error')
+            return redirect(url_for('donee_login'))
+    
+    elif request.method == 'GET':
+        return render_template('forgot_pass.html', form_action=url_for('forgot_pass2'))
+    
+@app.route('/donee/verify_forgotpass2', methods = ['POST', 'GET'])
+def verify_forgotpass2():
+    if 'forgotpass2' not in session:
+        flash('Not in Session', 'error')
+        return redirect(url_for('forgot_pass2'))
+    else:
+        if request.method == 'POST':
+            donee_otp = request.form.get('otp')
+            totp_secret = session['totp_secret']
+            print(f"Form OTP: {donee_otp}")
+            print(f"Session TOTP Secret: {totp_secret}")   
+
+            totp = pyotp.TOTP(totp_secret)
+            if totp.verify(donee_otp, valid_window=1):
+                flash("Reset Code is Valid... You may Change Your Password", 'success')
+                return redirect(url_for('changepass2'))
+            else:
+                flash("Invalid Code", 'error')
+
+    return render_template('verify_forgotpass.html', form_action=url_for('verify_forgotpass2'))
+
+@app.route('/donee/changepass2', methods=['POST','GET'])
+def changepass2():
+    if 'forgotpass2' not in session:
+        flash('Not in Session', 'error')
+        return redirect(url_for('forgot_pass2'))
+    else:
+        if request.method == 'POST':
+            newPassword = request.form.get('newpassword')
+            confirmPassword = request.form.get('cpassword')
+            
+            email = session['forgotpass2']
+
+            if newPassword != confirmPassword:
+                flash("Password DO NOT Match!", 'error')
+            else:
+                hashedPass = pbkdf2_sha256.hash(newPassword)
+                db.donee.update_one({'email': email},{'$set': {'password': hashedPass}})
+                flash("Password Reset Successfully. Login with your new Password", 'success')
+
+                session.pop('forgotpass2', None)
+                return redirect('donee_login')
+
+    return render_template('changepass.html', form_action=url_for('changepass2'))
+
+@app.route('/donee/signout')
+def signout2():
     session.clear()
     return redirect('/')
 

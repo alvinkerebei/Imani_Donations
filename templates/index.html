@@ -1,27 +1,30 @@
+<!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <title>HOME PAGE</title>
-  </head>
-  <body>
+</head>
+<body>
     <div class="bg-zinc-900 dark:bg-zinc-100">
-    <div class="flex items-center justify-between bg-zinc-900 dark:bg-zinc-100 p-4">
-        <div>
-            <a href="#" class="text-white dark:text-black border border-white dark:border-black rounded px-4 py-2 hover:bg-gradient-to-r from-blue-600 to-blue-400 dark:hover:bg-gradient-to-r dark:from-blue-400 dark:to-blue-600 hover:text-black dark:hover:text-white transition-colors">Home</a>
-            <a href="#" class="text-white dark:text-black border border-white dark:border-black rounded px-4 py-2 hover:bg-gradient-to-r from-blue-600 to-blue-400 dark:hover:bg-gradient-to-r dark:from-blue-400 dark:to-blue-600 hover:text-black dark:hover:text-white transition-colors">About</a>
-            <a href="#" class="text-white dark:text-black border border-white dark:border-black rounded px-4 py-2 hover:bg-gradient-to-r from-blue-600 to-blue-400 dark:hover:bg-gradient-to-r dark:from-blue-400 dark:to-blue-600 hover:text-black dark:hover:text-white transition-colors">Donate</a>
-            <a href="#" class="text-white dark:text-black border border-white dark:border-black rounded px-4 py-2 hover:bg-gradient-to-r from-blue-600 to-blue-400 dark:hover:bg-gradient-to-r dark:from-blue-400 dark:to-blue-600 hover:text-black dark:hover:text-white transition-colors">Contact</a>
-        </div>
-        <div>
-            <a href="{{url_for('login')}}" class="text-white dark:text-black border border-white dark:border-black rounded px-4 py-2 hover:bg-gradient-to-r from-blue-600 to-blue-400 dark:hover:bg-gradient-to-r dark:from-blue-400 dark:to-blue-600 hover:text-black dark:hover:text-white transition-colors">Login</a>
-            <a href="{{url_for('signup')}}" class="text-white dark:text-black border border-white dark:border-black rounded px-4 py-2 hover:bg-gradient-to-r from-blue-600 to-blue-400 dark:hover:bg-gradient-to-r dark:from-blue-400 dark:to-blue-600 hover:text-black dark:hover:text-white transition-colors">Sign Up</a>
+        <div class="flex items-center justify-between bg-zinc-900 dark:bg-zinc-100 p-4">
+            <div>
+                <a href="#" class="text-white dark:text-black border border-white dark:border-black rounded px-4 py-2 hover:bg-gradient-to-r from-blue-600 to-blue-400 dark:hover:bg-gradient-to-r dark:from-blue-400 dark:to-blue-600 hover:text-black dark:hover:text-white transition-colors">Home</a>
+                <a href="#" class="text-white dark:text-black border border-white dark:border-black rounded px-4 py-2 hover:bg-gradient-to-r from-blue-600 to-blue-400 dark:hover:bg-gradient-to-r dark:from-blue-400 dark:to-blue-600 hover:text-black dark:hover:text-white transition-colors">About</a>
+                <a href="#" class="text-white dark:text-black border border-white dark:border-black rounded px-4 py-2 hover:bg-gradient-to-r from-blue-600 to-blue-400 dark:hover:bg-gradient-to-r dark:from-blue-400 dark:to-blue-600 hover:text-black dark:hover:text-white transition-colors">Donate</a>
+                <a href="#" class="text-white dark:text-black border border-white dark:border-black rounded px-4 py-2 hover:bg-gradient-to-r from-blue-600 to-blue-400 dark:hover:bg-gradient-to-r dark:from-blue-400 dark:to-blue-600 hover:text-black dark:hover:text-white transition-colors">Contact</a>
+            </div>
+            <div>
+                <a href="{{url_for('donor_login')}}" class="text-white dark:text-black border border-white dark:border-black rounded px-4 py-2 hover:bg-gradient-to-r from-blue-600 to-blue-400 dark:hover:bg-gradient-to-r dark:from-blue-400 dark:to-blue-600 hover:text-black dark:hover:text-white transition-colors">Donor Login</a>
+                <a href="{{url_for('donee_login')}}" class="text-white dark:text-black border border-white dark:border-black rounded px-4 py-2 hover:bg-gradient-to-r from-blue-600 to-blue-400 dark:hover:bg-gradient-to-r dark:from-blue-400 dark:to-blue-600 hover:text-black dark:hover:text-white transition-colors"> DoneeLogin</a>              
+                <a href="{{url_for('donor_signup')}}" class="text-white dark:text-black border border-white dark:border-black rounded px-4 py-2 hover:bg-gradient-to-r from-blue-600 to-blue-400 dark:hover:bg-gradient-to-r dark:from-blue-400 dark:to-blue-600 hover:text-black dark:hover:text-white transition-colors">Donor Sign Up</a>
+                <a href="{{url_for('donee_signup')}}" class="text-white dark:text-black border border-white dark:border-black rounded px-4 py-2 hover:bg-gradient-to-r from-blue-600 to-blue-400 dark:hover:bg-gradient-to-r dark:from-blue-400 dark:to-blue-600 hover:text-black dark:hover:text-white transition-colors">Donee Sign Up</a>
+            </div>
         </div>
     </div>
-</div>
-<div class="flex flex-col items-center justify-center h-screen bg-zinc-900 dark:bg-zinc-100">
-    <h1 class="text-3xl font-bold text-white dark:text-black mb-8">Welcome to our Donation App</h1>
-</div>
-  </body>
+    <div class="flex flex-col items-center justify-center h-screen bg-zinc-900 dark:bg-zinc-100">
+        <h1 class="text-3xl font-bold text-white dark:text-black mb-8">Welcome to our Donation App</h1>
+    </div>
+</body>
 </html>

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="card-wrapper">
+    <div class="card">
+        {% if 'donor_login' in session %}
+            <h1 class="center">Donor</h1>
+            <p class="center">You are currently logged in as a Donor</p>
+
+            <div class="center">
+                <a href="/donor/signout" class="btn btn--secondary">Signout</a>
+            </div>
+        {% elif 'donee_login' in session %}
+            <h1 class="center">Donee</h1>
+            <p class="center">You are currently logged in as a Donee</p>
+
+            <div class="center">
+                <a href="/donee/signout" class="btn btn--secondary">Signout</a>
+            </div>
+        {% else %}
+            <p class="center">You are not logged in.</p>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        {% if 'donor_login' in session %}
+            <h2 class="center">Donor Info</h2>
+
+            <p>
+                <strong>ID:</strong> {{ session['donor_login']['_id'] }}<br>
+                <strong>Name:</strong> {{ session['donor_login']['name'] }}<br>
+                <strong>Email:</strong> {{ session['donor_login']['email'] }}<br>
+            </p>
+        {% elif 'donee_login' in session %}
+            <h2 class="center">Donee Info</h2>
+
+            <p>
+                <strong>ID:</strong> {{ session['donee_login']['_id'] }}<br>
+                <strong>Name:</strong> {{ session['donee_login']['name'] }}<br>
+                <strong>Email:</strong> {{ session['donee_login']['email'] }}<br>
+            </p>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

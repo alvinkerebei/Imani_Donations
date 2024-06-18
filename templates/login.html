@@ -7,7 +7,7 @@
 
         <h1 class="center">Login to your account</h1>
 
-        <form name="login_form" method="post" action="{{url_for('login')}}" novalidate>
+        <form name="login_form" method="post" action="{{form_action}}" novalidate>
 
             <label for="email">Email</label>
             <input type="email" id="email" name="email" class="field" >
@@ -17,7 +17,7 @@
 
             <input type="submit" value="Sign Up" class="btn"><br>
 
-            <a href="/donor/forgot_pass" style="display: block; text-align: center;">Forgot Password?</a>
+            <a href="{{forgot_pass_url}}" style="display: block; text-align: center;">Forgot Password?</a>
 
         </form>
     </div>
