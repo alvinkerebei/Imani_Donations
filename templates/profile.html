@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+  <body>
+    <div class="flex items-center justify-center min-h-screen bg-zinc-100">
+  <div class="bg-white rounded-lg shadow-lg p-8 max-w-lg w-full">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-semibold text-zinc-800">Account Setting</h2>
+      <button class="text-zinc-400 hover:text-zinc-600">
+        <img aria-hidden="true" alt="close" src="https://openui.fly.dev/openui/24x24.svg?text=✖" />
+      </button>
+    </div>
+    <div class="border-b border-zinc-200 mb-6">
+      <ul class="flex">
+        <li class="mr-6">
+          <a class="text-blue-500 border-b-2 border-blue-500 pb-2 inline-block" >Profile</a>
+        </li>
+      </ul>
+    </div>
+    <div class="flex items-center mb-6">
+      <img class="w-24 h-24 rounded-full mr-4" src="https://placehold.co/96x96" alt="User profile picture" />
+      <button class="bg-zinc-200 text-zinc-800 py-2 px-4 rounded">Change</button>
+    </div>
+    <form method="post" action="{form_action}">
+      <div class="mb-4">
+        <label class="block text-zinc-600 mb-1" for="name">Name</label>
+        <input class="w-full px-3 py-2 border border-zinc-300 rounded" type="text" id="name" name="name" value="{{ session['donee_login']['name'] }}" />
+      </div>
+      <div class="mb-4">
+        <label class="block text-zinc-600 mb-1" for="email">Email</label>
+        <input class="w-full px-3 py-2 border border-zinc-300 rounded" type="email" id="email" name="email" value="{{ session['donee_login']['email'] }}" />
+      </div>
+      <div class="mb-4">
+        <label class="block text-zinc-600 mb-1" for="phone">Phone</label>
+        <input class="w-full px-3 py-2 border border-zinc-300 rounded" type="tel" id="phone" name="phone" value="{{ session['donee_login']['phone'] }}" />
+      </div>
+      <div class="mb-4">
+        <label class="block text-zinc-600 mb-1" for="website">Address</label>
+        <input class="w-full px-3 py-2 border border-zinc-300 rounded" type="text" id="website" name="address" value="{{ session['donee_login']['address'] }}" />
+      </div>
+      <div class="mb-4">
+        <label class="block text-zinc-600 mb-1" for="password">Password</label>
+        <input class="w-full px-3 py-2 border border-zinc-300 rounded" type="password" id="password" name="password" value="*****" />
+      </div>
+      <div class="flex justify-end">
+        <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+  </body>
+
+  {% endblock %}

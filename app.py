@@ -8,7 +8,6 @@ import pyotp
 from flask import Flask, flash, render_template
 from email.mime.text import MIMEText
 import smtplib
-from flask import Flask, jsonify, request, session, redirect, url_for
 from passlib.hash import pbkdf2_sha256
 import pyotp
 import uuid
@@ -60,7 +59,9 @@ def donordash():
 def doneedash():
   return render_template('dash.html')
 
-
+@app.route('/doneehome/')
+def doneehome():
+    return render_template('doneehome.html')
 
 @app.route('/donor/donor_signup', methods=['POST', 'GET'])
 def donor_signup():
@@ -260,6 +261,42 @@ def changepass():
 
     return render_template('changepass.html', form_action=url_for('changepass'))
 
+@app.route('/donor/profile', methods=['GET', 'POST'])
+def profile():
+    if'donor_login' in session:
+        donor = session['donor_login']
+    else:
+        flash("Login to see profile details")
+        return redirect(url_for('donor_login'))
+    
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        phone = request.form.get('phone')
+        address = request.form.get('address')
+        password = request.form.get('password')
+        
+        # Update user details
+        update_data = {
+            'name': name,
+            'email': email,
+            'phone': phone,
+            'address': address,
+        }
+        
+        if password:
+            update_data['password'] = pbkdf2_sha256.hash(password)
+        
+        # Update the user in the database
+        db.donor.update_one({'_id': donor['_id']}, {'$set': update_data})
+        
+        # Update session data
+        donor.update(update_data)
+        session.modified = True
+        
+        flash("Profile updated successfully.", "success")
+        return render_template('profile.html', form_action=url_for('profile'))
+
 @app.route('/donor/signout')
 def signout():
     session.clear()
@@ -385,7 +422,7 @@ def twoFA2():
             totp = pyotp.TOTP(totp_secret)
             if totp.verify(donee_otp, valid_window=1):
                 flash("Verification Complete!", 'success')
-                return redirect(url_for('doneedash'))
+                return redirect(url_for('doneehome'))
             else:
                 flash("Invalid OTP", 'error')
 
@@ -460,6 +497,42 @@ def changepass2():
                 return redirect('donee_login')
 
     return render_template('changepass.html', form_action=url_for('changepass2'))
+
+@app.route('/donee/profile2', methods=['GET', 'POST'])
+def profile2():
+    if'donee_login' in session:
+        donee = session['donee_login']
+    else:
+        flash("Login to see profile details")
+        return redirect(url_for('donee_login'))
+    
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        phone = request.form.get('phone')
+        address = request.form.get('address')
+        password = request.form.get('password')
+        
+        # Update user details
+        update_data = {
+            'name': name,
+            'email': email,
+            'phone': phone,
+            'address': address,
+        }
+        
+        if password:
+            update_data['password'] = pbkdf2_sha256.hash(password)
+        
+        # Update the user in the database
+        db.donee.update_one({'_id': donee['_id']}, {'$set': update_data})
+        
+        # Update session data
+        donee.update(update_data)
+        session.modified = True
+        
+        flash("Profile updated successfully.", "success")
+        return render_template('profile.html', form_action=url_for('profile2'))
 
 @app.route('/donee/signout')
 def signout2():

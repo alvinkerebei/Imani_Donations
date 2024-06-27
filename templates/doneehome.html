@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Imani Donations</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Tailwind CSS custom styles */
+    .dropdown:hover .dropdown-menu {
+      display: block;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-900">
+
+<header class="bg-white shadow p-4 flex justify-between items-center border-b border-gray-300">
+  <div class="flex items-center">
+    <img src="https://placehold.co/40x40" alt="Logo" class="mr-2" />
+    <h1 class="text-xl font-bold">Imani Donations</h1>
+  </div>
+  <div class="flex items-center">
+    {% if 'donee_login' in session %}
+      <div class="relative dropdown">
+        <span class="mr-2 cursor-pointer">{{ session['donee_login']['name'] }}</span>
+        <img src="{{ session['donee_login']['profile_picture'] or 'https://placehold.co/40x40' }}" alt="User Profile Picture" class="rounded-full cursor-pointer" />
+        <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 dropdown-menu hidden">
+          <a href="{{url_for('profile')}}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profile</a>
+          <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Settings</a>
+          <a href="{{ url_for('signout') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</a>
+        </div>
+      </div>
+    {% else %}
+      <a href="{{ url_for('donee_login') }}" class="text-blue-500 hover:underline mr-4">Login</a>
+      <a href="{{ url_for('donee_signup') }}" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Sign Up</a>
+    {% endif %}
+  </div>
+</header>
+
+<!-- Your content goes here -->
+
+</body>
+</html>

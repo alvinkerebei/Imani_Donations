@@ -4,11 +4,139 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.8">
         <title>DONOR-ORGANISATION REGISTRATION</title>
-        <link rel="stylesheet" href="/static/css/normalize.css">
-        <link rel="stylesheet" href="/static/css/styles.css">
 
-    </head>
+
+   
     <body>
+        <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+		<script src="https://unpkg.com/unlazy@0.11.3/dist/unlazy.with-hashing.iife.js" defer init></script>
+		<script type="text/javascript">
+			window.tailwind.config = {
+				darkMode: ['class'],
+				theme: {
+					extend: {
+						colors: {
+							border: 'hsl(var(--border))',
+							input: 'hsl(var(--input))',
+							ring: 'hsl(var(--ring))',
+							background: 'hsl(var(--background))',
+							foreground: 'hsl(var(--foreground))',
+							primary: {
+								DEFAULT: 'hsl(var(--primary))',
+								foreground: 'hsl(var(--primary-foreground))'
+							},
+							secondary: {
+								DEFAULT: 'hsl(var(--secondary))',
+								foreground: 'hsl(var(--secondary-foreground))'
+							},
+							destructive: {
+								DEFAULT: 'hsl(var(--destructive))',
+								foreground: 'hsl(var(--destructive-foreground))'
+							},
+							muted: {
+								DEFAULT: 'hsl(var(--muted))',
+								foreground: 'hsl(var(--muted-foreground))'
+							},
+							accent: {
+								DEFAULT: 'hsl(var(--accent))',
+								foreground: 'hsl(var(--accent-foreground))'
+							},
+							popover: {
+								DEFAULT: 'hsl(var(--popover))',
+								foreground: 'hsl(var(--popover-foreground))'
+							},
+							card: {
+								DEFAULT: 'hsl(var(--card))',
+								foreground: 'hsl(var(--card-foreground))'
+							},
+						},
+					}
+				}
+			}
+		</script>
+		<style type="text/tailwindcss">
+			@layer base {
+				:root {
+					--background: 0 0% 100%;
+--foreground: 240 10% 3.9%;
+--card: 0 0% 100%;
+--card-foreground: 240 10% 3.9%;
+--popover: 0 0% 100%;
+--popover-foreground: 240 10% 3.9%;
+--primary: 240 5.9% 10%;
+--primary-foreground: 0 0% 98%;
+--secondary: 240 4.8% 95.9%;
+--secondary-foreground: 240 5.9% 10%;
+--muted: 240 4.8% 95.9%;
+--muted-foreground: 240 3.8% 46.1%;
+--accent: 240 4.8% 95.9%;
+--accent-foreground: 240 5.9% 10%;
+--destructive: 0 84.2% 60.2%;
+--destructive-foreground: 0 0% 98%;
+--border: 240 5.9% 90%;
+--input: 240 5.9% 90%;
+--ring: 240 5.9% 10%;
+--radius: 0.5rem;
+				}
+				.dark {
+					--background: 240 10% 3.9%;
+--foreground: 0 0% 98%;
+--card: 240 10% 3.9%;
+--card-foreground: 0 0% 98%;
+--popover: 240 10% 3.9%;
+--popover-foreground: 0 0% 98%;
+--primary: 0 0% 98%;
+--primary-foreground: 240 5.9% 10%;
+--secondary: 240 3.7% 15.9%;
+--secondary-foreground: 0 0% 98%;
+--muted: 240 3.7% 15.9%;
+--muted-foreground: 240 5% 64.9%;
+--accent: 240 3.7% 15.9%;
+--accent-foreground: 0 0% 98%;
+--destructive: 0 62.8% 30.6%;
+--destructive-foreground: 0 0% 98%;
+--border: 240 3.7% 15.9%;
+--input: 240 3.7% 15.9%;
+--ring: 240 4.9% 83.9%;
+				}
+			}
+		</style>       
+     <link rel="stylesheet" href="/static/css/normalize.css">
+      <link rel="stylesheet" href="/static/css/styles.css">
+ </head>
+        
+           <div class="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-zinc-100">
+            <header class="flex items-center justify-between p-4 border-b border-zinc-200 dark:border-zinc-700">
+              <div class="flex items-center space-x-4">
+                <img src="https://placehold.co/40x40?text=Logo" alt="Imani Donations Logo" />
+                <span class="text-xl font-bold">Imani Donations</span>
+              </div>  
+                {% if 'donee_login' in session or 'donor_login' in session %}
+                  <div class="relative dropdown">
+                    {% if 'donee_login' in session %}
+                      <span class="mr-2 cursor-pointer">{{ session['donee_login']['name'] }}</span>
+                      <img src="{{ session['donee_login']['profile_picture'] or 'https://placehold.co/40x40' }}" alt="User Profile Picture" class="rounded-full cursor-pointer" />
+                    {% elif 'donor_login' in session %}
+                      <span class="mr-2 cursor-pointer">{{ session['donor_login']['name'] }}</span>
+                      <img src="{{ session['donor_login']['profile_picture'] or 'https://placehold.co/40x40' }}" alt="User Profile Picture" class="rounded-full cursor-pointer" />
+                    {% endif %}
+                    <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 dropdown-menu hidden">
+                      <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profile</a>
+                      <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Settings</a>
+                      <a href="{{ url_for('signout') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</a>
+                    </div>
+                  </div>
+                {% else %}
+                <nav class="flex items-center space-x-4">
+                  <a href="#" class="hover:text-zinc-600 dark:hover:text-zinc-300">About</a>
+                  <a href="{{url_for('doneehome')}}" class="hover:text-zinc-600 dark:hover:text-zinc-300">Donee</a>
+                  <a href="{{url_for('donordash')}}" class="hover:text-zinc-600 dark:hover:text-zinc-300">Donors</a>
+                {% endif %}
+              </nav>
+            </header>
+
+        
+          
 
         {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -26,6 +154,135 @@
 
         {% endblock %}
 
+        <style type="text/tailwindcss">
+          @layer base {
+              :root {
+                  --background: 0 0% 100%;
+--foreground: 240 10% 3.9%;
+--card: 0 0% 100%;
+--card-foreground: 240 10% 3.9%;
+--popover: 0 0% 100%;
+--popover-foreground: 240 10% 3.9%;
+--primary: 240 5.9% 10%;
+--primary-foreground: 0 0% 98%;
+--secondary: 240 4.8% 95.9%;
+--secondary-foreground: 240 5.9% 10%;
+--muted: 240 4.8% 95.9%;
+--muted-foreground: 240 3.8% 46.1%;
+--accent: 240 4.8% 95.9%;
+--accent-foreground: 240 5.9% 10%;
+--destructive: 0 84.2% 60.2%;
+--destructive-foreground: 0 0% 98%;
+--border: 240 5.9% 90%;
+--input: 240 5.9% 90%;
+--ring: 240 5.9% 10%;
+--radius: 0.5rem;
+              }
+              .dark {
+                  --background: 240 10% 3.9%;
+--foreground: 0 0% 98%;
+--card: 240 10% 3.9%;
+--card-foreground: 0 0% 98%;
+--popover: 240 10% 3.9%;
+--popover-foreground: 0 0% 98%;
+--primary: 0 0% 98%;
+--primary-foreground: 240 5.9% 10%;
+--secondary: 240 3.7% 15.9%;
+--secondary-foreground: 0 0% 98%;
+--muted: 240 3.7% 15.9%;
+--muted-foreground: 240 5% 64.9%;
+--accent: 240 3.7% 15.9%;
+--accent-foreground: 0 0% 98%;
+--destructive: 0 62.8% 30.6%;
+--destructive-foreground: 0 0% 98%;
+--border: 240 3.7% 15.9%;
+--input: 240 3.7% 15.9%;
+--ring: 240 4.9% 83.9%;
+              }
+          }
+      </style>
+
+  <footer class="bg-zinc-800 dark:bg-zinc-900 text-white dark:text-zinc-300 py-8 w-full">
+      <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center mb-8 px-4">
+        <div class="flex items-center mb-4 md:mb-0">
+          <img src="https://placehold.co/40x40" alt="Imani Donations logo" class="mr-2">
+          <span class="text-2xl font-bold">Imani Donations</span>
+        </div>
+        <p class="text-center md:text-left max-w-md">
+          Imani Donations makes it easy and safe for you to give to local projects anywhere in the world, while providing nonprofits with the tools, training, and support they need to thrive.
+        </p>
+        <button class="bg-secondary text-secondary-foreground border border-secondary-foreground py-2 px-4 rounded hover:bg-secondary/80">HELP CENTER</button>
+      </div>
+      <div class="flex justify-center space-x-4 mb-8">
+        <a href="#" aria-label="Facebook">
+          <img src="https://openui.fly.dev/openui/24x24.svg?text=📘" alt="Facebook icon">
+        </a>
+        <a href="#" aria-label="Twitter">
+          <img src="https://openui.fly.dev/openui/24x24.svg?text=🐦" alt="Twitter icon">
+        </a>
+        <a href="#" aria-label="Instagram">
+          <img src="https://openui.fly.dev/openui/24x24.svg?text=📸" alt="Instagram icon">
+        </a>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+        <div>
+          <h3 class="text-primary font-bold mb-2 text-white">Donors</h3>
+          <ul>
+            <li><a href="#" class="hover:underline">Give or Redeem Gift Cards</a></li>
+            <li><a href="#" class="hover:underline">Donate in Honor</a></li>
+            <li><a href="#" class="hover:underline">Project of the Month Club</a></li>
+            <li><a href="#" class="hover:underline">Start a Fundraiser</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-primary font-bold mb-2 text-white">Companies</h3>
+          <ul>
+            <li><a href="#" class="hover:underline">Our Services</a></li>
+            <li><a href="#" class="hover:underline">Our Partners</a></li>
+            <li><a href="#" class="hover:underline">Corporate Gift Cards</a></li>
+            <li><a href="#" class="hover:underline">Imani Donations Atlas</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-primary font-bold mb-2 text-white">About Us</h3>
+          <ul>
+            <li><a href="#" class="hover:underline">Our Team</a></li>
+            <li><a href="#" class="hover:underline">Jobs</a></li>
+            <li><a href="#" class="hover:underline">FAQs</a></li>
+            <li><a href="#" class="hover:underline">Contact Us</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="flex justify-center space-x-4 mb-8">
+        <img src="https://placehold.co/100x40" alt="The Washington Post logo">
+        <img src="https://placehold.co/100x40" alt="CNN logo">
+        <img src="https://placehold.co/100x40" alt="NPR logo">
+        <img src="https://placehold.co/100x40" alt="The New York Times logo">
+      </div>
+      <div class="text-center text-sm mb-4">
+        <p>&copy; Copyright 2000-2024 Imani Donations, a 501(c)(3) organization (EIN: 30-0108263)</p>
+        <p>Registered Charity in England and Wales #1122823</p>
+        <p>1 Thomas Circle NW, Suite 800, Washington, DC 20005, USA</p>
+        <p>Questions? <a href="#" class="text-primary hover:underline">Contact Us</a></p>
+      </div>
+      <div class="flex justify-center space-x-4 mb-4">
+        <img src="https://placehold.co/40x40" alt="Charity Navigator logo">
+        <img src="https://placehold.co/40x40" alt="Platinum Transparency 2024 logo">
+        <img src="https://placehold.co/40x40" alt="Accredited Charity logo">
+        <img src="https://placehold.co/40x40" alt="Secure Site logo">
+      </div>
+      <div class="text-center text-sm">
+        <a href="#" class="text-primary hover:underline">$ USD</a> &middot; 
+        <a href="#" class="hover:underline">PRIVACY</a> &middot; 
+        <a href="#" class="hover:underline">COOKIES</a> &middot; 
+        <a href="#" class="hover:underline">TERMS</a> &middot; 
+        <a href="#" class="hover:underline">PRICING</a> &middot; 
+        <a href="#" class="hover:underline">API</a> &middot; 
+        <a href="#" class="hover:underline">DATA</a>
+      </div>
+    </div>
+  </footer>
 
     </body>
 
