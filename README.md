@@ -61,7 +61,6 @@ You can download the PickUpMtaani app from the following links:
 
 Create a `requirements.txt` file with the following content to list all dependencies:
 
-```text
 bcrypt==4.1.3
 blinker==1.8.2
 click==8.1.7
@@ -105,6 +104,34 @@ Follow these steps to start donating with Imani Donation:
 6. **Receive Confirmation**
     - After your donation is delivered, you will receive a confirmation email from Imani Donation.
     - Thank you for your generosity!
+
+## Input:
+
+Name: [Your Name]
+Email: [Your Email]
+Phone: [Your Phone Number]
+Donation Items: [List of items you are donating]
+Preferred Pick-Up Time: [Your preferred pick-up time]
+Pick-Up Address: [Your pick-up address]
+Special Instructions: [Any special instructions]
+
+## Output:
+
+Thank you, [Your Name], for your generous donation!
+
+**Your donation:**
+- Items Donated: [List of items you are donating]
+- Pick-Up Time: [Your preferred pick-up time]
+- Pick-Up Address: [Your pick-up address]
+- Special Instructions: [Any special instructions]
+
+Your donation will be picked up by PickUpMtaani and delivered to those in need.
+
+We appreciate your support in making a difference in our community!
+
+Best regards,
+Imani Donation Team
+
 
 ## Contact Us
 
