@@ -57,14 +57,13 @@ You can download the PickUpMtaani app from the following links:
     deactivate
     ```
 
-###  `Install requirements`
 
 ## Getting Started
 
 Follow these steps to start donating with Imani Donation:
 
 1. **Sign Up/Log In**
-    - Visit our [website](https://www.imanidonation.org) or open the Imani Donation app.
+    - Visit our website
     - Sign up for a new account or log in to your existing account.
 
 2. **Prepare Your Donation**
