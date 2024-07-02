@@ -1,30 +1,523 @@
-<!DOCTYPE html>
-<html>
-<head>
+{% extends "base.html" %}
+
+{% block content %} 
+
+  <main class="p-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      
+      <div class="col-span-1 md:col-span-2 relative">
+        <img src="{{url_for('static', filename='uploads/picture1.jpeg')}}" alt="Providing meals to 100 street children in Manila" class="w-full h-auto object-cover" />
+        <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-4 text-white">
+          <p class="text-sm uppercase" >Philippines</p>
+          <h2 class="text-x1 font-bold text-white">Providing meals to 100 street children in Manila</h2>
+          <a class="mt-2 bg-orange-600 text-white px-4 py-2 rounded inline-block" href="{{ url_for('donorhome') }}">Donate</a>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 gap-4">
+        <div class="relative">
+          <img src="{{url_for('static', filename='uploads/picture2.jpeg')}}" alt="Help young lives learn how to farm in Africa" class="w-full h-auto object-cover" />
+          <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-4 text-white">
+            <p class="text-sm uppercase">Cameroon</p>
+            <h3 class="text-lg font-bold">Help young lives learn how to farm in Africa</h3>
+          </div>
+        </div>
+        <div class="relative">
+          <img src="{{url_for('static', filename='uploads/picture3.jpeg')}}" alt="Sudan Emergency Fund" class="w-full h-auto object-cover" />
+          <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-4 text-white">
+            <p class="text-sm uppercase">Sudan</p>
+            <h3 class="text-lg font-bold">Sudan Emergency Fund</h3>
+          </div>
+        </div>
+        <div class="relative">
+          <img src="{{url_for('static', filename='uploads/picture4.jpg')}}" alt="Help LAC teachers work online through OLI" class="w-full h-auto object-cover" />
+          <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-4 text-white">
+            <p class="text-sm uppercase">Guatemala</p>
+            <h3 class="text-lg font-bold">Help LAC teachers work online through OLI</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+          <script src="https://unpkg.com/unlazy@0.11.3/dist/unlazy.with-hashing.iife.js" defer init></script>
+          <script type="text/javascript">
+              window.tailwind.config = {
+                  darkMode: ['class'],
+                  theme: {
+                      extend: {
+                          colors: {
+                              border: 'hsl(var(--border))',
+                              input: 'hsl(var(--input))',
+                              ring: 'hsl(var(--ring))',
+                              background: 'hsl(var(--background))',
+                              foreground: 'hsl(var(--foreground))',
+                              primary: {
+                                  DEFAULT: 'hsl(var(--primary))',
+                                  foreground: 'hsl(var(--primary-foreground))'
+                              },
+                              secondary: {
+                                  DEFAULT: 'hsl(var(--secondary))',
+                                  foreground: 'hsl(var(--secondary-foreground))'
+                              },
+                              destructive: {
+                                  DEFAULT: 'hsl(var(--destructive))',
+                                  foreground: 'hsl(var(--destructive-foreground))'
+                              },
+                              muted: {
+                                  DEFAULT: 'hsl(var(--muted))',
+                                  foreground: 'hsl(var(--muted-foreground))'
+                              },
+                              accent: {
+                                  DEFAULT: 'hsl(var(--accent))',
+                                  foreground: 'hsl(var(--accent-foreground))'
+                              },
+                              popover: {
+                                  DEFAULT: 'hsl(var(--popover))',
+                                  foreground: 'hsl(var(--popover-foreground))'
+                              },
+                              card: {
+                                  DEFAULT: 'hsl(var(--card))',
+                                  foreground: 'hsl(var(--card-foreground))'
+                              },
+                          },
+                      }
+                  }
+              }
+          </script>
+          <style type="text/tailwindcss">
+              @layer base {
+                  :root {
+                      --background: 0 0% 100%;
+  --foreground: 240 10% 3.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 240 10% 3.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 10% 3.9%;
+  --primary: 240 5.9% 10%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 240 4.8% 95.9%;
+  --secondary-foreground: 240 5.9% 10%;
+  --muted: 240 4.8% 95.9%;
+  --muted-foreground: 240 3.8% 46.1%;
+  --accent: 240 4.8% 95.9%;
+  --accent-foreground: 240 5.9% 10%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 240 5.9% 90%;
+  --input: 240 5.9% 90%;
+  --ring: 240 5.9% 10%;
+  --radius: 0.5rem;
+                  }
+                  .dark {
+                      --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 0 0% 98%;
+  --primary-foreground: 240 5.9% 10%;
+  --secondary: 240 3.7% 15.9%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --accent: 240 3.7% 15.9%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --ring: 240 4.9% 83.9%;
+                  }
+              }
+          </style>
+    </head>
+    <body>
+      <div class="bg-white text-center py-12">
+    <h2 class="text-xl md:text-2xl lg:text-3xl font-semibold text-zinc-800">
+      Imani Donations connects <span class="font-bold">nonprofits</span>, <span class="font-bold">donors</span>, and <span class="font-bold">companies</span> in nearly every country in the world. We help fellow nonprofits access the funding, tools, training, and support they need to serve their communities.
+    </h2>
+    <button class="mt-6 px-6 py-3 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600">
+      LEARN MORE
+    </button>
+  </div>
+  
+  <div class="bg-zinc-800 text-white py-8">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between px-4">
+      <div class="flex items-center mb-6 md:mb-0">
+        <img src="{{ url_for('static', filename='uploads/imanilogo.jpg') }}" alt="Imani Donations logo" class="w-20 h-20 mr-4">
+        <div>
+          <p class="text-orange-500 font-bold text-lg">MORE THAN 4 MONTHS OF</p>
+          <p class="text-2xl font-bold">Imani Donations</p>
+        </div>
+      </div>
+      <div class="flex flex-wrap justify-around w-full md:w-auto">
+        <div class="text-center mx-4 mb-4 md:mb-0">
+          <p class="text-2xl font-bold">4</p>
+          <p class="text-sm">months</p>
+        </div>
+        <div class="text-center mx-4 mb-4 md:mb-0">
+          <p class="text-2xl font-bold">$10</p>
+          <p class="text-sm">dollars</p>
+        </div>
+        <div class="text-center mx-4 mb-4 md:mb-0">
+          <p class="text-2xl font-bold">1</p>
+          <p class="text-sm">donor</p>
+        </div>
+        <div class="text-center mx-4 mb-4 md:mb-0">
+          <p class="text-2xl font-bold">1</p>
+          <p class="text-sm">projects</p>
+        </div>
+        <div class="text-center mx-4 mb-4 md:mb-0">
+          <p class="text-2xl font-bold">1</p>
+          <p class="text-sm">country</p>
+        </div>
+        <div class="text-center mx-4 mb-4 md:mb-0">
+          <p class="text-2xl font-bold">1</p>
+          <p class="text-sm">company</p>
+        </div>
+      </div>
+    </div>
+  </div>
+    </body>
+  </html>
+  <html>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <title>HOME PAGE</title>
-</head>
-<body>
-    <div class="bg-zinc-900 dark:bg-zinc-100">
-        <div class="flex items-center justify-between bg-zinc-900 dark:bg-zinc-100 p-4">
-            <div>
-                <a href="#" class="text-white dark:text-black border border-white dark:border-black rounded px-4 py-2 hover:bg-gradient-to-r from-blue-600 to-blue-400 dark:hover:bg-gradient-to-r dark:from-blue-400 dark:to-blue-600 hover:text-black dark:hover:text-white transition-colors">Home</a>
-                <a href="#" class="text-white dark:text-black border border-white dark:border-black rounded px-4 py-2 hover:bg-gradient-to-r from-blue-600 to-blue-400 dark:hover:bg-gradient-to-r dark:from-blue-400 dark:to-blue-600 hover:text-black dark:hover:text-white transition-colors">About</a>
-                <a href="#" class="text-white dark:text-black border border-white dark:border-black rounded px-4 py-2 hover:bg-gradient-to-r from-blue-600 to-blue-400 dark:hover:bg-gradient-to-r dark:from-blue-400 dark:to-blue-600 hover:text-black dark:hover:text-white transition-colors">Donate</a>
-                <a href="#" class="text-white dark:text-black border border-white dark:border-black rounded px-4 py-2 hover:bg-gradient-to-r from-blue-600 to-blue-400 dark:hover:bg-gradient-to-r dark:from-blue-400 dark:to-blue-600 hover:text-black dark:hover:text-white transition-colors">Contact</a>
-            </div>
-            <div>
-                <a href="{{url_for('donor_login')}}" class="text-white dark:text-black border border-white dark:border-black rounded px-4 py-2 hover:bg-gradient-to-r from-blue-600 to-blue-400 dark:hover:bg-gradient-to-r dark:from-blue-400 dark:to-blue-600 hover:text-black dark:hover:text-white transition-colors">Donor Login</a>
-                <a href="{{url_for('donee_login')}}" class="text-white dark:text-black border border-white dark:border-black rounded px-4 py-2 hover:bg-gradient-to-r from-blue-600 to-blue-400 dark:hover:bg-gradient-to-r dark:from-blue-400 dark:to-blue-600 hover:text-black dark:hover:text-white transition-colors"> DoneeLogin</a>              
-                <a href="{{url_for('donor_signup')}}" class="text-white dark:text-black border border-white dark:border-black rounded px-4 py-2 hover:bg-gradient-to-r from-blue-600 to-blue-400 dark:hover:bg-gradient-to-r dark:from-blue-400 dark:to-blue-600 hover:text-black dark:hover:text-white transition-colors">Donor Sign Up</a>
-                <a href="{{url_for('donee_signup')}}" class="text-white dark:text-black border border-white dark:border-black rounded px-4 py-2 hover:bg-gradient-to-r from-blue-600 to-blue-400 dark:hover:bg-gradient-to-r dark:from-blue-400 dark:to-blue-600 hover:text-black dark:hover:text-white transition-colors">Donee Sign Up</a>
-            </div>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+		<script src="https://unpkg.com/unlazy@0.11.3/dist/unlazy.with-hashing.iife.js" defer init></script>
+		<script type="text/javascript">
+			window.tailwind.config = {
+				darkMode: ['class'],
+				theme: {
+					extend: {
+						colors: {
+							border: 'hsl(var(--border))',
+							input: 'hsl(var(--input))',
+							ring: 'hsl(var(--ring))',
+							background: 'hsl(var(--background))',
+							foreground: 'hsl(var(--foreground))',
+							primary: {
+								DEFAULT: 'hsl(var(--primary))',
+								foreground: 'hsl(var(--primary-foreground))'
+							},
+							secondary: {
+								DEFAULT: 'hsl(var(--secondary))',
+								foreground: 'hsl(var(--secondary-foreground))'
+							},
+							destructive: {
+								DEFAULT: 'hsl(var(--destructive))',
+								foreground: 'hsl(var(--destructive-foreground))'
+							},
+							muted: {
+								DEFAULT: 'hsl(var(--muted))',
+								foreground: 'hsl(var(--muted-foreground))'
+							},
+							accent: {
+								DEFAULT: 'hsl(var(--accent))',
+								foreground: 'hsl(var(--accent-foreground))'
+							},
+							popover: {
+								DEFAULT: 'hsl(var(--popover))',
+								foreground: 'hsl(var(--popover-foreground))'
+							},
+							card: {
+								DEFAULT: 'hsl(var(--card))',
+								foreground: 'hsl(var(--card-foreground))'
+							},
+						},
+					}
+				}
+			}
+		</script>
+		<style type="text/tailwindcss">
+			@layer base {
+				:root {
+					--background: 0 0% 100%;
+--foreground: 240 10% 3.9%;
+--card: 0 0% 100%;
+--card-foreground: 240 10% 3.9%;
+--popover: 0 0% 100%;
+--popover-foreground: 240 10% 3.9%;
+--primary: 240 5.9% 10%;
+--primary-foreground: 0 0% 98%;
+--secondary: 240 4.8% 95.9%;
+--secondary-foreground: 240 5.9% 10%;
+--muted: 240 4.8% 95.9%;
+--muted-foreground: 240 3.8% 46.1%;
+--accent: 240 4.8% 95.9%;
+--accent-foreground: 240 5.9% 10%;
+--destructive: 0 84.2% 60.2%;
+--destructive-foreground: 0 0% 98%;
+--border: 240 5.9% 90%;
+--input: 240 5.9% 90%;
+--ring: 240 5.9% 10%;
+--radius: 0.5rem;
+				}
+				.dark {
+					--background: 240 10% 3.9%;
+--foreground: 0 0% 98%;
+--card: 240 10% 3.9%;
+--card-foreground: 0 0% 98%;
+--popover: 240 10% 3.9%;
+--popover-foreground: 0 0% 98%;
+--primary: 0 0% 98%;
+--primary-foreground: 240 5.9% 10%;
+--secondary: 240 3.7% 15.9%;
+--secondary-foreground: 0 0% 98%;
+--muted: 240 3.7% 15.9%;
+--muted-foreground: 240 5% 64.9%;
+--accent: 240 3.7% 15.9%;
+--accent-foreground: 0 0% 98%;
+--destructive: 0 62.8% 30.6%;
+--destructive-foreground: 0 0% 98%;
+--border: 240 3.7% 15.9%;
+--input: 240 3.7% 15.9%;
+--ring: 240 4.9% 83.9%;
+				}
+			}
+		</style>
+  </head>
+  <body>
+    <html>
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+              <script src="https://unpkg.com/unlazy@0.11.3/dist/unlazy.with-hashing.iife.js" defer init></script>
+              <script type="text/javascript">
+                  window.tailwind.config = {
+                      darkMode: ['class'],
+                      theme: {
+                          extend: {
+                              colors: {
+                                  border: 'hsl(var(--border))',
+                                  input: 'hsl(var(--input))',
+                                  ring: 'hsl(var(--ring))',
+                                  background: 'hsl(var(--background))',
+                                  foreground: 'hsl(var(--foreground))',
+                                  primary: {
+                                      DEFAULT: 'hsl(var(--primary))',
+                                      foreground: 'hsl(var(--primary-foreground))'
+                                  },
+                                  secondary: {
+                                      DEFAULT: 'hsl(var(--secondary))',
+                                      foreground: 'hsl(var(--secondary-foreground))'
+                                  },
+                                  destructive: {
+                                      DEFAULT: 'hsl(var(--destructive))',
+                                      foreground: 'hsl(var(--destructive-foreground))'
+                                  },
+                                  muted: {
+                                      DEFAULT: 'hsl(var(--muted))',
+                                      foreground: 'hsl(var(--muted-foreground))'
+                                  },
+                                  accent: {
+                                      DEFAULT: 'hsl(var(--accent))',
+                                      foreground: 'hsl(var(--accent-foreground))'
+                                  },
+                                  popover: {
+                                      DEFAULT: 'hsl(var(--popover))',
+                                      foreground: 'hsl(var(--popover-foreground))'
+                                  },
+                                  card: {
+                                      DEFAULT: 'hsl(var(--card))',
+                                      foreground: 'hsl(var(--card-foreground))'
+                                  },
+                              },
+                          }
+                      }
+                  }
+              </script>
+              <style type="text/tailwindcss">
+                  @layer base {
+                      :root {
+                          --background: 0 0% 100%;
+      --foreground: 240 10% 3.9%;
+      --card: 0 0% 100%;
+      --card-foreground: 240 10% 3.9%;
+      --popover: 0 0% 100%;
+      --popover-foreground: 240 10% 3.9%;
+      --primary: 240 5.9% 10%;
+      --primary-foreground: 0 0% 98%;
+      --secondary: 240 4.8% 95.9%;
+      --secondary-foreground: 240 5.9% 10%;
+      --muted: 240 4.8% 95.9%;
+      --muted-foreground: 240 3.8% 46.1%;
+      --accent: 240 4.8% 95.9%;
+      --accent-foreground: 240 5.9% 10%;
+      --destructive: 0 84.2% 60.2%;
+      --destructive-foreground: 0 0% 98%;
+      --border: 240 5.9% 90%;
+      --input: 240 5.9% 90%;
+      --ring: 240 5.9% 10%;
+      --radius: 0.5rem;
+                      }
+                      .dark {
+                          --background: 240 10% 3.9%;
+      --foreground: 0 0% 98%;
+      --card: 240 10% 3.9%;
+      --card-foreground: 0 0% 98%;
+      --popover: 240 10% 3.9%;
+      --popover-foreground: 0 0% 98%;
+      --primary: 0 0% 98%;
+      --primary-foreground: 240 5.9% 10%;
+      --secondary: 240 3.7% 15.9%;
+      --secondary-foreground: 0 0% 98%;
+      --muted: 240 3.7% 15.9%;
+      --muted-foreground: 240 5% 64.9%;
+      --accent: 240 3.7% 15.9%;
+      --accent-foreground: 0 0% 98%;
+      --destructive: 0 62.8% 30.6%;
+      --destructive-foreground: 0 0% 98%;
+      --border: 240 3.7% 15.9%;
+      --input: 240 3.7% 15.9%;
+      --ring: 240 4.9% 83.9%;
+                      }
+                  }
+              </style>
+        </head>
+
+          
+      
+      <div class="flex justify-center items-center min-h-screen bg-background">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="border border-border rounded-lg p-6 text-center">
+            <img src="{{ url_for('static', filename='uploads/picture5.jpg') }}" alt="gift" class="mx-auto mb-4" />
+            <h2 class="text-foreground mb-2">gift</h2>
+            <p class="text-muted-foreground mb-4">People like you give to your favorite projects; you feel great when you get updates about how your money is put to work by trusted organizations.</p>
+            <strong class="text-foreground">DONORS</strong>
+          </div>
+          <div class="border border-border rounded-lg p-6 text-center">
+            <img src="{{ url_for('static', filename='uploads/picture6.jpg') }}" alt="Companies" class="mx-auto mb-4" />
+            <h2 class="text-foreground mb-2">building</h2>
+            <p class="text-muted-foreground mb-4">Generous companies and their employees further support high-impact projects with donations and grants, helping local communities thrive.</p>
+            <strong class="text-foreground">COMPANIES</strong>
+          </div>
+          <div class="border border-border rounded-lg p-6 text-center">
+            <img src="{{ url_for('static', filename='uploads/picture7.jpg') }}" alt="globe" class="mx-auto mb-4" />
+            <h2 class="text-foreground mb-2">globe</h2>
+            <p class="text-muted-foreground mb-4">Nonprofits have the funding they need to listen to feedback and try out new ways to work; communities all over the globe get more awesome!</p>
+            <strong class="text-foreground">DONEES</strong>
+          </div>
         </div>
-    </div>
-    <div class="flex flex-col items-center justify-center h-screen bg-zinc-900 dark:bg-zinc-100">
-        <h1 class="text-3xl font-bold text-white dark:text-black mb-8">Welcome to our Donation App</h1>
-    </div>
-</body>
+      </div>
+      
+      
+    
+      </html>
+
+      <html>
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+              <script src="https://unpkg.com/unlazy@0.11.3/dist/unlazy.with-hashing.iife.js" defer init></script>
+              <script type="text/javascript">
+                  window.tailwind.config = {
+                      darkMode: ['class'],
+                      theme: {
+                          extend: {
+                              colors: {
+                                  border: 'hsl(var(--border))',
+                                  input: 'hsl(var(--input))',
+                                  ring: 'hsl(var(--ring))',
+                                  background: 'hsl(var(--background))',
+                                  foreground: 'hsl(var(--foreground))',
+                                  primary: {
+                                      DEFAULT: 'hsl(var(--primary))',
+                                      foreground: 'hsl(var(--primary-foreground))'
+                                  },
+                                  secondary: {
+                                      DEFAULT: 'hsl(var(--secondary))',
+                                      foreground: 'hsl(var(--secondary-foreground))'
+                                  },
+                                  destructive: {
+                                      DEFAULT: 'hsl(var(--destructive))',
+                                      foreground: 'hsl(var(--destructive-foreground))'
+                                  },
+                                  muted: {
+                                      DEFAULT: 'hsl(var(--muted))',
+                                      foreground: 'hsl(var(--muted-foreground))'
+                                  },
+                                  accent: {
+                                      DEFAULT: 'hsl(var(--accent))',
+                                      foreground: 'hsl(var(--accent-foreground))'
+                                  },
+                                  popover: {
+                                      DEFAULT: 'hsl(var(--popover))',
+                                      foreground: 'hsl(var(--popover-foreground))'
+                                  },
+                                  card: {
+                                      DEFAULT: 'hsl(var(--card))',
+                                      foreground: 'hsl(var(--card-foreground))'
+                                  },
+                              },
+                          }
+                      }
+                  }
+              </script>
+              <style type="text/tailwindcss">
+                  @layer base {
+                      :root {
+                          --background: 0 0% 100%;
+      --foreground: 240 10% 3.9%;
+      --card: 0 0% 100%;
+      --card-foreground: 240 10% 3.9%;
+      --popover: 0 0% 100%;
+      --popover-foreground: 240 10% 3.9%;
+      --primary: 240 5.9% 10%;
+      --primary-foreground: 0 0% 98%;
+      --secondary: 240 4.8% 95.9%;
+      --secondary-foreground: 240 5.9% 10%;
+      --muted: 240 4.8% 95.9%;
+      --muted-foreground: 240 3.8% 46.1%;
+      --accent: 240 4.8% 95.9%;
+      --accent-foreground: 240 5.9% 10%;
+      --destructive: 0 84.2% 60.2%;
+      --destructive-foreground: 0 0% 98%;
+      --border: 240 5.9% 90%;
+      --input: 240 5.9% 90%;
+      --ring: 240 5.9% 10%;
+      --radius: 0.5rem;
+                      }
+                      .dark {
+                          --background: 240 10% 3.9%;
+      --foreground: 0 0% 98%;
+      --card: 240 10% 3.9%;
+      --card-foreground: 0 0% 98%;
+      --popover: 240 10% 3.9%;
+      --popover-foreground: 0 0% 98%;
+      --primary: 0 0% 98%;
+      --primary-foreground: 240 5.9% 10%;
+      --secondary: 240 3.7% 15.9%;
+      --secondary-foreground: 0 0% 98%;
+      --muted: 240 3.7% 15.9%;
+      --muted-foreground: 240 5% 64.9%;
+      --accent: 240 3.7% 15.9%;
+      --accent-foreground: 0 0% 98%;
+      --destructive: 0 62.8% 30.6%;
+      --destructive-foreground: 0 0% 98%;
+      --border: 240 3.7% 15.9%;
+      --input: 240 3.7% 15.9%;
+      --ring: 240 4.9% 83.9%;
+                      }
+                  }
+              </style>
+        </head>
+      </html>
+
+  </body>
 </html>
+</div>
+
+  </body>
+</html>
+{% endblock %}

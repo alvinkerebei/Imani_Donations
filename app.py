@@ -8,12 +8,13 @@ import pyotp
 from flask import Flask, flash, render_template
 from email.mime.text import MIMEText
 import smtplib
-from flask import Flask, jsonify, request, session, redirect, url_for
 from passlib.hash import pbkdf2_sha256
 import pyotp
 import uuid
 from itsdangerous import URLSafeTimedSerializer as Serializer
-from flask_mail import Message  
+from flask_mail import Message 
+from werkzeug.utils import secure_filename 
+from datetime import timedelta
 
 app = Flask(__name__)
 app.secret_key= 'alvinsecretkey'
@@ -36,6 +37,16 @@ def send_mail(to_address, subject, body):
 client = pymongo.MongoClient('localhost', 27017)
 db = client.imanidonationdb
 
+#handling pictures
+UPLOAD_FOLDER = 'static/uploads'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['DEFAULT_PROFILE_PICTURE'] = 'static/default.jpg'
+app.config['PERMANENT_SESSION_TIME'] = timedelta(minutes=1)
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 def login_required(f):
   @wraps(f)
   def wrap(*args, **kwargs):
@@ -45,6 +56,14 @@ def login_required(f):
       return redirect('/')
   
   return wrap
+
+@app.before_request
+def make_sesh_permanent():
+    session.permanent = True
+
+@app.before_request
+def update_sesh_life():
+    session.modified =True
 
 @app.route('/')
 def home():
@@ -60,7 +79,13 @@ def donordash():
 def doneedash():
   return render_template('dash.html')
 
+@app.route('/donorhome/')
+def donorhome():
+    return render_template('donorhome.html')
 
+@app.route('/doneehome/')
+def doneehome():
+    return render_template('doneehome.html')
 
 @app.route('/donor/donor_signup', methods=['POST', 'GET'])
 def donor_signup():
@@ -182,7 +207,7 @@ def twoFA():
             totp = pyotp.TOTP(totp_secret)
             if totp.verify(donor_otp, valid_window=1):
                 flash("Verification Complete!", 'success')
-                return redirect(url_for('donordash'))
+                return redirect(url_for('donorhome'))
             else:
                 flash("Invalid OTP", 'error')
 
@@ -259,6 +284,65 @@ def changepass():
                 return redirect('donor_login')
 
     return render_template('changepass.html', form_action=url_for('changepass'))
+
+@app.route('/donor/profile', methods=['GET', 'POST'])
+def profile():
+    if'donor_login' in session:
+        donor = session['donor_login']
+    else:
+        flash("Login to see profile details")
+        return redirect(url_for('donor_login'))
+    
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        phone = request.form.get('phone')
+        address = request.form.get('address')
+        password = request.form.get('password')
+        profile_picture = request.files.get('profile_picture')   
+      
+        # Update user details
+        update_data = {
+            'name': name,
+            'email': email,
+            'phone': phone,
+            'address': address,
+        }
+        
+        if password:
+            update_data['password'] = pbkdf2_sha256.hash(password) 
+
+    if profile_picture and allowed_file(profile_picture.filename):
+        filename = secure_filename(profile_picture.filename)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        profile_picture.save(filepath)
+        normalized_filepath = filepath.replace('\\', '/')
+        update_data['profile_picture'] = filepath
+        session['donor_login']['profile_picture'] = normalized_filepath
+    else:
+    # Use the existing profile picture or the default one
+        if 'profile_picture' not in donor:
+            update_data['profile_picture'] = app.config['DEFAULT_PROFILE_PICTURE']
+
+        print(update_data)
+
+        # Update the user in the database
+        db.donor.update_one({'_id': donor['_id']}, {'$set': update_data})
+        
+        # Update session data
+        session_data = session.get('donor_login')
+        for key, value in update_data.items():
+            session_data[key] = value
+        session['donor_login'] = session_data
+        
+        flash("Profile updated successfully.", "success")
+        return redirect(url_for('profile'))
+    
+    return render_template('donorprofile.html', donor=donor)
+
+@app.route('/donor/make_donation')
+def make_donation():
+    return render_template('donorhome.html')
 
 @app.route('/donor/signout')
 def signout():
@@ -385,7 +469,7 @@ def twoFA2():
             totp = pyotp.TOTP(totp_secret)
             if totp.verify(donee_otp, valid_window=1):
                 flash("Verification Complete!", 'success')
-                return redirect(url_for('doneedash'))
+                return redirect(url_for('doneehome'))
             else:
                 flash("Invalid OTP", 'error')
 
@@ -460,6 +544,48 @@ def changepass2():
                 return redirect('donee_login')
 
     return render_template('changepass.html', form_action=url_for('changepass2'))
+
+@app.route('/donee/profile2', methods=['GET', 'POST'])
+def profile2():
+    if'donee_login' in session:
+        donee = session['donee_login']
+    else:
+        flash("Login to see profile details")
+        return redirect(url_for('donee_login'))
+    
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        phone = request.form.get('phone')
+        address = request.form.get('address')
+        password = request.form.get('password')
+        
+        # Update user details
+        update_data = {
+            'name': name,
+            'email': email,
+            'phone': phone,
+            'address': address,
+        }
+        
+        if password:
+            update_data['password'] = pbkdf2_sha256.hash(password)
+        
+        # Update the user in the database
+        db.donee.update_one({'_id': donee['_id']}, {'$set': update_data})
+        
+        # Update session data
+        donee.update(update_data)
+        session.modified = True
+        
+        flash("Profile updated successfully.", "success")
+        return redirect(url_for('profile2'))
+    
+    return render_template('doneeprofile.html')
+
+@app.route('/donee/create_profile')
+def create_profile():
+    return render_template('doneehome.html')
 
 @app.route('/donee/signout')
 def signout2():

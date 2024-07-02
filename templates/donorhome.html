@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Imani Donations</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 500px;
+    }
+    .tab {
+      display: none;
+    }
+    .tab.active {
+      display: block;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-900">
+
+<header class="bg-white shadow p-4 flex justify-between items-center border-b border-gray-300">
+  <div class="flex items-center">
+    <img src="{{ url_for('static', filename='uploads/imanilogo.jpg') }}" alt="Logo" class="mr-2" />
+    <h1 class="text-xl font-bold">Imani Donations</h1>
+  </div>
+  <div class="flex items-center">
+    {% if 'donor_login' in session %}
+      <div class="relative dropdown">
+        <span class="mr-2 cursor-pointer">{{ session['donor_login']['name'] }}</span>
+        <img src="{{ session['donor_login']['profile_picture'] or 'https://placehold.co/40x40' }}" alt="User Profile Picture" class="rounded-full cursor-pointer" />
+        <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 dropdown-menu hidden">
+          <a href="{{url_for('profile')}}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profile</a>
+          <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Settings</a>
+          <a href="{{ url_for('signout') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</a>
+        </div>
+      </div>
+    {% else %}
+      <a href="{{ url_for('donor_login') }}" class="text-blue-500 hover:underline mr-4">Login</a>
+      <a href="{{ url_for('donor_signup') }}" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Sign Up</a>
+    {% endif %}
+  </div>
+  <script>
+    document.querySelectorAll('.dropdown').forEach(dropdown => {
+      dropdown.addEventListener('click', () => {
+        const menu = dropdown.querySelector('.dropdown-menu');
+        menu.classList.toggle('hidden');
+      });
+    });
+  </script>
+</header>
+
+<main class="p-6">
+  <section class="text-center mb-12">
+    <h2 class="text-3xl font-bold mb-4">Welcome to Imani Donations</h2>
+    <p class="text-lg mb-6">Thank you for your generosity! Your support helps us to make a difference in the lives of those in need. Here's how you can help:</p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-white shadow-md rounded-lg p-4">
+        <img src="{{ url_for('static', filename='uploads/picture8.jpeg') }}" alt="Illustration 1" class="w-full h-48 object-cover rounded-t-lg mb-4" />
+        <h3 class="text-xl font-bold mb-2">Provide Meals</h3>
+        <p class="text-gray-700">Help us provide nutritious meals to children in need. Your donation can make a big difference!</p>
+      </div>
+      <div class="bg-white shadow-md rounded-lg p-4">
+        <img src="{{ url_for('static', filename='uploads/picture9.jpg') }}" alt="Illustration 2" class="w-full h-48 object-cover rounded-t-lg mb-4" />
+        <h3 class="text-xl font-bold mb-2">Support Education</h3>
+        <p class="text-gray-700">Your contributions can help provide essential educational resources to underprivileged children.</p>
+      </div>
+      <div class="bg-white shadow-md rounded-lg p-4">
+        <img src="{{ url_for('static', filename='uploads/picture10.jpeg') }}" alt="Illustration 3" class="w-full h-48 object-cover rounded-t-lg mb-4" />
+        <h3 class="text-xl font-bold mb-2">Healthcare Assistance</h3>
+        <p class="text-gray-700">Support our healthcare initiatives to improve the well-being of vulnerable communities.</p>
+      </div>
+    </div>
+  </section>
+  {% if 'donor_login' in session %}
+  <div class="text-center">
+    <button id="donateBtn" class="bg-orange-600 text-white px-6 py-3 rounded hover:bg-orange-700">Donate</button>
+  </div>
+  {% endif %}
+</main>
+
+<div id="donateModal" class="modal flex" style="display:none">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2 class="text-2xl font-bold mb-4">Make a Donation</h2>
+    <form method="post" action="{{ url_for('make_donation') }}">
+      <div class="mb-4">
+        <label class="block text-gray-700 mb-1" for="donee">Select Donee</label>
+        <select class="w-full px-3 py-2 border border-gray-300 rounded" id="donee" name="donee" required>
+          <!-- Assuming `donees` is a list of approved donee objects passed to the template -->
+          {% for donee in donees %}
+            <option value="{{ donee.id }}">{{ donee.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 mb-1" for="amount">Donation Amount</label>
+        <input class="w-full px-3 py-2 border border-gray-300 rounded" type="number" id="amount" name="amount" required>
+      </div>
+
+      <!-- Tab navigation -->
+      <div class="mb-4">
+        <div class="flex justify-around mb-2">
+          <button type="button" class="tab-link px-4 py-2 bg-gray-200 rounded" onclick="openTab(event, 'credit_card')">Credit Card</button>
+          <button type="button" class="tab-link px-4 py-2 bg-gray-200 rounded" onclick="openTab(event, 'paypal')">PayPal</button>
+          <button type="button" class="tab-link px-4 py-2 bg-gray-200 rounded" onclick="openTab(event, 'mpesa')">M-Pesa</button>
+        </div>
+
+        <!-- Tab content -->
+        <div id="credit_card" class="tab">
+          <div class="mb-4">
+            <label class="block text-gray-700 mb-1" for="cc_number">Credit Card Number</label>
+            <input class="w-full px-3 py-2 border border-gray-300 rounded" type="text" id="cc_number" name="cc_number">
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700 mb-1" for="cc_expiry">Expiry Date</label>
+            <input class="w-full px-3 py-2 border border-gray-300 rounded" type="text" id="cc_expiry" name="cc_expiry">
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700 mb-1" for="cc_cvc">CVC</label>
+            <input class="w-full px-3 py-2 border border-gray-300 rounded" type="text" id="cc_cvc" name="cc_cvc">
+          </div>
+        </div>
+
+        <div id="paypal" class="tab">
+          <p class="text-gray-700">You will be redirected to PayPal to complete your donation.</p>
+        </div>
+
+        <div id="mpesa" class="tab">
+          <div class="mb-4">
+            <label class="block text-gray-700 mb-1" for="mpesa_number">M-Pesa Number</label>
+            <input class="w-full px-3 py-2 border border-gray-300 rounded" type="text" id="mpesa_number" name="mpesa_number">
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700 mb-1" for="mpesa_transaction_id">Transaction ID</label>
+            <input class="w-full px-3 py-2 border border-gray-300 rounded" type="text" id="mpesa_transaction_id" name="mpesa_transaction_id">
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 mb-1" for="message">Message (optional)</label>
+        <textarea class="w-full px-3 py-2 border border-gray-300 rounded" id="message" name="message"></textarea>
+      </div>
+
+      <div class="flex justify-end">
+        <input class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600" type="submit" value="Submit Donation">
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Modal functionality
+  var modal = document.getElementById('donateModal');
+  var span = document.getElementsByClassName('close')[0];
+  
+  // Open modal
+  donateBtn.onclick = function() {
+    modal.style.display = 'flex';
+  }
+  
+  // Close modal
+  span.onclick = function() {
+    modal.style.display = 'none';
+  }
+  
+  window.onclick = function(event) {
+    if (event.target == modal) {
+      modal.style.display = 'none';
+    }
+  }
+
+  // Tab functionality
+  function openTab(evt, tabName) {
+    var i, tabcontent, tablinks;
+    
+    tabcontent = document.getElementsByClassName('tab');
+    for (i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].style.display = 'none';
+    }
+    
+    tablinks = document.getElementsByClassName('tab-link');
+    for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(' bg-blue-500 text-white', '');
+    }
+    
+    document.getElementById(tabName).style.display = 'block';
+    evt.currentTarget.className += ' bg-blue-500 text-white';
+  }
+
+  // Set default tab
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('.tab-link').click();
+  });
+</script>
+
+</body>
+</html>
