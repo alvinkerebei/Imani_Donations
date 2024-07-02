@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Imani Donations</title>
+  <title>Imani Donations - Donee Homepage</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* Tailwind CSS custom styles */
     .dropdown:hover .dropdown-menu {
       display: block;
     }
@@ -16,7 +15,7 @@
 
 <header class="bg-white shadow p-4 flex justify-between items-center border-b border-gray-300">
   <div class="flex items-center">
-    <img src="https://placehold.co/40x40" alt="Logo" class="mr-2" />
+    <img src="{{ url_for('static', filename='uploads/imanilogo.jpg') }}" alt="Logo" class="mr-2" />
     <h1 class="text-xl font-bold">Imani Donations</h1>
   </div>
   <div class="flex items-center">
@@ -25,7 +24,7 @@
         <span class="mr-2 cursor-pointer">{{ session['donee_login']['name'] }}</span>
         <img src="{{ session['donee_login']['profile_picture'] or 'https://placehold.co/40x40' }}" alt="User Profile Picture" class="rounded-full cursor-pointer" />
         <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 dropdown-menu hidden">
-          <a href="{{url_for('profile')}}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profile</a>
+          <a href="{{ url_for('profile2') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profile</a>
           <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Settings</a>
           <a href="{{ url_for('signout') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</a>
         </div>
@@ -35,9 +34,39 @@
       <a href="{{ url_for('donee_signup') }}" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Sign Up</a>
     {% endif %}
   </div>
+  <script>
+    // JavaScript to toggle dropdown menu visibility
+    document.querySelectorAll('.dropdown').forEach(dropdown => {
+      dropdown.addEventListener('click', () => {
+        const menu = dropdown.querySelector('.dropdown-menu');
+        menu.classList.toggle('hidden');
+      });
+    });
+  </script>
 </header>
 
-<!-- Your content goes here -->
+<main class="p-6">
+  <section class="bg-white shadow-md rounded-lg p-4 mb-6">
+    <h2 class="text-2xl font-bold mb-4">Create Your Profile</h2>
+    <form method="post" action="{{ url_for('create_profile') }}" enctype="multipart/form-data">
+      <div class="mb-4">
+        <label class="block text-gray-700 mb-1" for="description">Description</label>
+        <textarea class="w-full px-3 py-2 border border-gray-300 rounded" id="description" name="description" rows="4" required></textarea>
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700 mb-1" for="needs">Your Needs</label>
+        <textarea class="w-full px-3 py-2 border border-gray-300 rounded" id="needs" name="needs" rows="4" required></textarea>
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700 mb-1" for="pictures">Upload Pictures</label>
+        <input class="w-full px-3 py-2 border border-gray-300 rounded" type="file" id="pictures" name="pictures" accept="image/*" multiple required>
+      </div>
+      <div class="flex justify-end">
+        <input class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600" type="submit" value="Save Profile">
+      </div>
+    </form>
+  </section>
+</main>
 
 </body>
 </html>

@@ -8,13 +8,13 @@
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-2xl font-semibold text-zinc-800">Account Setting</h2>
       <button class="text-zinc-400 hover:text-zinc-600">
-        <img aria-hidden="true" alt="close" src="https://openui.fly.dev/openui/24x24.svg?text=✖" />
+        <img aria-hidden="true" alt="close" src="https://openui.fly.dev/openui/24x24.svg?text=✖" href="{{url_for('doneehome')}}" />
       </button>
     </div>
     <div class="border-b border-zinc-200 mb-6">
       <ul class="flex">
         <li class="mr-6">
-          <a class="text-blue-500 border-b-2 border-blue-500 pb-2 inline-block" >Profile</a>
+          <a class="text-blue-500 border-b-2 border-blue-500 pb-2 inline-block" >Donee Profile</a>
         </li>
       </ul>
     </div>
@@ -22,7 +22,7 @@
       <img class="w-24 h-24 rounded-full mr-4" src="https://placehold.co/96x96" alt="User profile picture" />
       <button class="bg-zinc-200 text-zinc-800 py-2 px-4 rounded">Change</button>
     </div>
-    <form method="post" action="{form_action}">
+    <form method="post" action="{{url_for('profile2')}}">
       <div class="mb-4">
         <label class="block text-zinc-600 mb-1" for="name">Name</label>
         <input class="w-full px-3 py-2 border border-zinc-300 rounded" type="text" id="name" name="name" value="{{ session['donee_login']['name'] }}" />

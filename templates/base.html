@@ -4,9 +4,6 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.8">
         <title>DONOR-ORGANISATION REGISTRATION</title>
-
-
-   
     <body>
         <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
 		<script src="https://unpkg.com/unlazy@0.11.3/dist/unlazy.with-hashing.iife.js" defer init></script>
@@ -100,6 +97,19 @@
 --ring: 240 4.9% 83.9%;
 				}
 			}
+      .styled-link {
+            border: 2px solid transparent; /* Initially, the border is transparent */
+            border-radius: 10px; /* Make the border rounded */
+            padding: 8px 12px; /* Add some padding to make the border visible */
+            color: #1976D2; /* Set the initial text color to blue */
+            transition: all 0.3s ease; /* Smooth transition for the hover effect */
+        }
+
+        .styled-link:hover {
+            border-color: #1976D2; /* Change the border color to blue on hover */
+            color: white; /* Change the text color to white on hover */
+            background-color: #1976D2; /* Change the background color to blue on hover */
+        }
 		</style>       
      <link rel="stylesheet" href="/static/css/normalize.css">
       <link rel="stylesheet" href="/static/css/styles.css">
@@ -108,34 +118,43 @@
            <div class="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-zinc-100">
             <header class="flex items-center justify-between p-4 border-b border-zinc-200 dark:border-zinc-700">
               <div class="flex items-center space-x-4">
-                <img src="https://placehold.co/40x40?text=Logo" alt="Imani Donations Logo" />
-                <span class="text-xl font-bold">Imani Donations</span>
-              </div>  
+                <img src="{{ url_for('static', filename='uploads/imanilogo.jpg') }}" alt="Imani Donations Logo" class="mr-2" />
+                <h1 class="text-xl font-bold">Imani Donations</h1>
+              </div>
+              {% if 'donee_login' not in session and 'donor_login' not in session %}
+                 <nav class="flex items-center space-x-4">
+                  <a href="{{url_for('doneehome')}}" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Donee</a>
+                  <a href="{{url_for('donorhome')}}" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Donors</a>
+                  <a href="#" class="styled-link flex justify-end text-align-center">About</a>                  
+                  {% endif %}
+              </nav>
                 {% if 'donee_login' in session or 'donor_login' in session %}
                   <div class="relative dropdown">
                     {% if 'donee_login' in session %}
                       <span class="mr-2 cursor-pointer">{{ session['donee_login']['name'] }}</span>
-                      <img src="{{ session['donee_login']['profile_picture'] or 'https://placehold.co/40x40' }}" alt="User Profile Picture" class="rounded-full cursor-pointer" />
+                      <img src="{{ session['donee_login']['profile_picture'] or 'https://placehold.co/40x40' }}"  value="profile_picture" alt="User Profile Picture" class="rounded-full cursor-pointer" />
                     {% elif 'donor_login' in session %}
                       <span class="mr-2 cursor-pointer">{{ session['donor_login']['name'] }}</span>
-                      <img src="{{ session['donor_login']['profile_picture'] or 'https://placehold.co/40x40' }}" alt="User Profile Picture" class="rounded-full cursor-pointer" />
+                      <img src="{{url_for ('static', filename=session['donor_login']['profile_picture'])}}" value="profile_picture" alt="User Profile Picture" class="rounded-full cursor-pointer" />
                     {% endif %}
                     <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 dropdown-menu hidden">
                       <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profile</a>
                       <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Settings</a>
                       <a href="{{ url_for('signout') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</a>
                     </div>
-                  </div>
-                {% else %}
-                <nav class="flex items-center space-x-4">
-                  <a href="#" class="hover:text-zinc-600 dark:hover:text-zinc-300">About</a>
-                  <a href="{{url_for('doneehome')}}" class="hover:text-zinc-600 dark:hover:text-zinc-300">Donee</a>
-                  <a href="{{url_for('donordash')}}" class="hover:text-zinc-600 dark:hover:text-zinc-300">Donors</a>
-                {% endif %}
-              </nav>
+                  </div> {% endif %}
+                              <script>
+              // JavaScript to toggle dropdown menu visibility
+              document.querySelectorAll('.dropdown').forEach(dropdown => {
+                dropdown.addEventListener('click', () => {
+                  const menu = dropdown.querySelector('.dropdown-menu');
+                  menu.classList.toggle('hidden');
+                });
+              });
+            </script>
             </header>
 
-        
+
           
 
         {% with messages = get_flashed_messages() %}
@@ -206,23 +225,23 @@
       <div class="container mx-auto px-4">
       <div class="flex flex-col md:flex-row justify-between items-center mb-8 px-4">
         <div class="flex items-center mb-4 md:mb-0">
-          <img src="https://placehold.co/40x40" alt="Imani Donations logo" class="mr-2">
+          <img src="{{ url_for('static', filename='uploads/imanilogo.jpg') }}" alt="Imani Donations logo" class="mr-2">
           <span class="text-2xl font-bold">Imani Donations</span>
         </div>
         <p class="text-center md:text-left max-w-md">
           Imani Donations makes it easy and safe for you to give to local projects anywhere in the world, while providing nonprofits with the tools, training, and support they need to thrive.
         </p>
-        <button class="bg-secondary text-secondary-foreground border border-secondary-foreground py-2 px-4 rounded hover:bg-secondary/80">HELP CENTER</button>
+        <button class="bg-secondary text-secondary-foreground border border-secondary-foreground py-2 px-4 rounded hover:bg-secondary/80 background-white">HELP CENTER</button>
       </div>
       <div class="flex justify-center space-x-4 mb-8">
         <a href="#" aria-label="Facebook">
-          <img src="https://openui.fly.dev/openui/24x24.svg?text=📘" alt="Facebook icon">
+          <img src="{{ url_for('static', filename='uploads/facebook.jpg') }}" alt="Facebook icon">
         </a>
         <a href="#" aria-label="Twitter">
-          <img src="https://openui.fly.dev/openui/24x24.svg?text=🐦" alt="Twitter icon">
+          <img src="{{ url_for('static', filename='uploads/xlogo.jpg') }}" alt="Twitter icon">
         </a>
         <a href="#" aria-label="Instagram">
-          <img src="https://openui.fly.dev/openui/24x24.svg?text=📸" alt="Instagram icon">
+          <img src="{{ url_for('static', filename='uploads/instagram.jpg') }}" alt="Instagram icon">
         </a>
       </div>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
@@ -254,23 +273,10 @@
           </ul>
         </div>
       </div>
-      <div class="flex justify-center space-x-4 mb-8">
-        <img src="https://placehold.co/100x40" alt="The Washington Post logo">
-        <img src="https://placehold.co/100x40" alt="CNN logo">
-        <img src="https://placehold.co/100x40" alt="NPR logo">
-        <img src="https://placehold.co/100x40" alt="The New York Times logo">
-      </div>
       <div class="text-center text-sm mb-4">
-        <p>&copy; Copyright 2000-2024 Imani Donations, a 501(c)(3) organization (EIN: 30-0108263)</p>
-        <p>Registered Charity in England and Wales #1122823</p>
-        <p>1 Thomas Circle NW, Suite 800, Washington, DC 20005, USA</p>
+        <p>&copy; Copyright 2024 Imani Donations, a 501(c)(3) organization (EIN: 30-0108263)</p>
+        <p>Registered Charity in Kenya </p>
         <p>Questions? <a href="#" class="text-primary hover:underline">Contact Us</a></p>
-      </div>
-      <div class="flex justify-center space-x-4 mb-4">
-        <img src="https://placehold.co/40x40" alt="Charity Navigator logo">
-        <img src="https://placehold.co/40x40" alt="Platinum Transparency 2024 logo">
-        <img src="https://placehold.co/40x40" alt="Accredited Charity logo">
-        <img src="https://placehold.co/40x40" alt="Secure Site logo">
       </div>
       <div class="text-center text-sm">
         <a href="#" class="text-primary hover:underline">$ USD</a> &middot; 

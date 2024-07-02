@@ -6,41 +6,34 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       
       <div class="col-span-1 md:col-span-2 relative">
-        <img src="https://placehold.co/800x400" alt="Providing meals to 100 street children in Manila" class="w-full h-auto object-cover" />
+        <img src="{{url_for('static', filename='uploads/picture1.jpeg')}}" alt="Providing meals to 100 street children in Manila" class="w-full h-auto object-cover" />
         <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-4 text-white">
-          <p class="text-sm uppercase">Philippines</p>
-          <h2 class="text-xl font-bold">Providing meals to 100 street children in Manila</h2>
-          <button class="mt-2 bg-orange-600 text-white px-4 py-2 rounded">Donate</button>
+          <p class="text-sm uppercase" >Philippines</p>
+          <h2 class="text-x1 font-bold text-white">Providing meals to 100 street children in Manila</h2>
+          <a class="mt-2 bg-orange-600 text-white px-4 py-2 rounded inline-block" href="{{ url_for('donorhome') }}">Donate</a>
         </div>
       </div>
       
       <div class="grid grid-cols-1 gap-4">
         <div class="relative">
-          <img src="https://placehold.co/400x200" alt="Help young lives learn how to farm in Africa" class="w-full h-auto object-cover" />
+          <img src="{{url_for('static', filename='uploads/picture2.jpeg')}}" alt="Help young lives learn how to farm in Africa" class="w-full h-auto object-cover" />
           <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-4 text-white">
             <p class="text-sm uppercase">Cameroon</p>
             <h3 class="text-lg font-bold">Help young lives learn how to farm in Africa</h3>
           </div>
         </div>
         <div class="relative">
-          <img src="https://placehold.co/400x200" alt="Sudan Emergency Fund" class="w-full h-auto object-cover" />
+          <img src="{{url_for('static', filename='uploads/picture3.jpeg')}}" alt="Sudan Emergency Fund" class="w-full h-auto object-cover" />
           <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-4 text-white">
             <p class="text-sm uppercase">Sudan</p>
             <h3 class="text-lg font-bold">Sudan Emergency Fund</h3>
           </div>
         </div>
         <div class="relative">
-          <img src="https://placehold.co/400x200" alt="Help LAC teachers work online through OLI" class="w-full h-auto object-cover" />
+          <img src="{{url_for('static', filename='uploads/picture4.jpg')}}" alt="Help LAC teachers work online through OLI" class="w-full h-auto object-cover" />
           <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-4 text-white">
             <p class="text-sm uppercase">Guatemala</p>
             <h3 class="text-lg font-bold">Help LAC teachers work online through OLI</h3>
-          </div>
-        </div>
-        <div class="relative">
-          <img src="https://placehold.co/400x200" alt="Improving rural schools in Nepal" class="w-full h-auto object-cover" />
-          <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-4 text-white">
-            <p class="text-sm uppercase">Nepal</p>
-            <h3 class="text-lg font-bold">Improving rural schools in Nepal</h3>
           </div>
         </div>
       </div>
@@ -158,7 +151,7 @@
   <div class="bg-zinc-800 text-white py-8">
     <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between px-4">
       <div class="flex items-center mb-6 md:mb-0">
-        <img src="https://placehold.co/80x80" alt="Imani Donations logo" class="w-20 h-20 mr-4">
+        <img src="{{ url_for('static', filename='uploads/imanilogo.jpg') }}" alt="Imani Donations logo" class="w-20 h-20 mr-4">
         <div>
           <p class="text-orange-500 font-bold text-lg">MORE THAN 4 MONTHS OF</p>
           <p class="text-2xl font-bold">Imani Donations</p>
@@ -397,22 +390,22 @@
       <div class="flex justify-center items-center min-h-screen bg-background">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div class="border border-border rounded-lg p-6 text-center">
-            <img src="https://placehold.co/24x24?text=📦" alt="gift" class="mx-auto mb-4" />
+            <img src="{{ url_for('static', filename='uploads/picture5.jpg') }}" alt="gift" class="mx-auto mb-4" />
             <h2 class="text-foreground mb-2">gift</h2>
             <p class="text-muted-foreground mb-4">People like you give to your favorite projects; you feel great when you get updates about how your money is put to work by trusted organizations.</p>
             <strong class="text-foreground">DONORS</strong>
           </div>
           <div class="border border-border rounded-lg p-6 text-center">
-            <img src="https://placehold.co/24x24?text=🏢" alt="building" class="mx-auto mb-4" />
+            <img src="{{ url_for('static', filename='uploads/picture6.jpg') }}" alt="Companies" class="mx-auto mb-4" />
             <h2 class="text-foreground mb-2">building</h2>
             <p class="text-muted-foreground mb-4">Generous companies and their employees further support high-impact projects with donations and grants, helping local communities thrive.</p>
             <strong class="text-foreground">COMPANIES</strong>
           </div>
           <div class="border border-border rounded-lg p-6 text-center">
-            <img src="https://placehold.co/24x24?text=🌍" alt="globe" class="mx-auto mb-4" />
+            <img src="{{ url_for('static', filename='uploads/picture7.jpg') }}" alt="globe" class="mx-auto mb-4" />
             <h2 class="text-foreground mb-2">globe</h2>
             <p class="text-muted-foreground mb-4">Nonprofits have the funding they need to listen to feedback and try out new ways to work; communities all over the globe get more awesome!</p>
-            <strong class="text-foreground">OUR IMPACT</strong>
+            <strong class="text-foreground">DONEES</strong>
           </div>
         </div>
       </div>
