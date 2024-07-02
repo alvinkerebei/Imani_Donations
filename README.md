@@ -57,24 +57,7 @@ You can download the PickUpMtaani app from the following links:
     deactivate
     ```
 
-### Example `requirements.txt`
-
-Create a `requirements.txt` file with the following content to list all dependencies:
-
-bcrypt==4.1.3
-blinker==1.8.2
-click==8.1.7
-colorama==0.4.6
-dnspython==2.6.1
-Flask==3.0.3
-Flask-Mail==0.10.0
-itsdangerous==2.2.0
-Jinja2==3.1.4
-MarkupSafe==2.1.5
-passlib==1.7.4
-pymongo==4.7.2
-pyotp==2.9.0
-Werkzeug==3.0.3
+###  `Install requirements`
 
 ## Getting Started
 
