@@ -113,13 +113,5 @@ If you have any questions or need assistance, please contact our support team:
 - Email: alvin.kerebei@strathmore.edu or lorna.nyabuto@strathmore.edu
 - Phone: +254716310442 or +254726654971
 
-## Follow Us
-
-Stay updated with our latest news and events:
-
-- [Facebook](https://www.facebook.com/imanidonation)
-- [Twitter](https://www.twitter.com/imanidonation)
-- [Instagram](https://www.instagram.com/imanidonation)
-
 Thank you for choosing Imani Donation to make a difference in our community!
 
