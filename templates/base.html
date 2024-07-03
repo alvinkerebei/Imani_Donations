@@ -118,26 +118,31 @@
            <div class="bg-white text-zinc-900 dark:bg-zinc-900 dark:text-zinc-100">
             <header class="flex items-center justify-between p-4 border-b border-zinc-200 dark:border-zinc-700">
               <div class="flex items-center space-x-4">
-                <img src="{{ url_for('static', filename='uploads/imanilogo.jpg') }}" alt="Imani Donations Logo" class="mr-2" />
-                <h1 class="text-xl font-bold">Imani Donations</h1>
+                <img src="{{ url_for('static', filename='uploads/imanilogo.jpg') }}" href="{{url_for('home')}}" alt="Imani Donations Logo" class="mr-2" />
+                <h1 class="text-xl font-bold" >Imani Donations</h1>
               </div>
               {% if 'donee_login' not in session and 'donor_login' not in session %}
                  <nav class="flex items-center space-x-4">
                   <a href="{{url_for('doneehome')}}" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Donee</a>
                   <a href="{{url_for('donorhome')}}" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Donors</a>
-                  <a href="#" class="styled-link flex justify-end text-align-center">About</a>                  
+                  <a href="{{url_for('home')}}" class="styled-link flex justify-end text-align-center">Home</a>                  
                   {% endif %}
               </nav>
                 {% if 'donee_login' in session or 'donor_login' in session %}
                   <div class="relative dropdown">
                     {% if 'donee_login' in session %}
                       <span class="mr-2 cursor-pointer">{{ session['donee_login']['name'] }}</span>
-                      <img src="{{ session['donee_login']['profile_picture'] or 'https://placehold.co/40x40' }}"  value="profile_picture" alt="User Profile Picture" class="rounded-full cursor-pointer" />
+                      <img src="{{url_for('display_image2')}}"  value="profile_picture" alt="User Profile Picture" class="rounded-full cursor-pointer" />
                     {% elif 'donor_login' in session %}
                       <span class="mr-2 cursor-pointer">{{ session['donor_login']['name'] }}</span>
-                      <img src="{{url_for ('static', filename=session['donor_login']['profile_picture'])}}" value="profile_picture" alt="User Profile Picture" class="rounded-full cursor-pointer" />
+                      <img src="{{url_for ('display_image')}}" value="profile_picture" alt="User Profile Picture" class="rounded-full cursor-pointer" />
                     {% endif %}
                     <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 dropdown-menu hidden">
+                      {% if 'donor_login' in session %}
+                      <a href="{{ url_for('donorhome') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Home</a>
+                      {% elif 'donee_login' in session %}
+                      <a href="{{ url_for('doneehome') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Home</a>
+                      {% endif %}
                       <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profile</a>
                       <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Settings</a>
                       <a href="{{ url_for('signout') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</a>
@@ -153,10 +158,6 @@
               });
             </script>
             </header>
-
-
-          
-
         {% with messages = get_flashed_messages() %}
         {% if messages %}
             <ul class="flashed-messages">
@@ -166,11 +167,7 @@
             </ul>
         {% endif %}
     {% endwith %}
-    
         {% block content %}
-        
-
-
         {% endblock %}
 
         <style type="text/tailwindcss">
@@ -289,7 +286,5 @@
       </div>
     </div>
   </footer>
-
     </body>
-
 </HTML>

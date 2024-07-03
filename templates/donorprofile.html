@@ -18,24 +18,26 @@
         </li>
       </ul>
     </div>
-    <form method="post" action="{{ url_for('profile') }}" enctype="multipart/form-data">
+    <form method="post" action="{{ url_for('upload_image') }}" enctype="multipart/form-data">
       <div class="flex items-center mb-6">
-        <input type="file" id="profile_picture" name="profile_picture" class="hidden" accept="image/*">
+        <input type="file" id="profile_picture" name="profile_picture"  accept="image/*">
+        <input type="submit" value="Upload" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
         <label for="profile_picture" class="cursor-pointer">
-          <img id="profile_picture " class="w-24 h-24 rounded-full mr-4" src="{{ url_for('static', filename=session['donor_login']['profile_picture']) }}" alt="Profile Picture" />
+          <img id="profile_picture_preview " class="w-24 h-24 rounded-full mr-4" src="{{ url_for('display_image') }}" alt="Profile Picture" />
         </label>
       </div>
-      
+      </form>
       <script>
         document.getElementById('profile_picture').addEventListener('change', function(event) {
-          const reader = new FileReader();
-          reader.onload = function(e) {
-            document.getElementById('profile_picture_preview').src = e.target.result;
-          }
-          reader.readAsDataURL(event.target.files[0]);
+            var reader = new FileReader();
+            reader.onload = function() {
+                var output = document.getElementById('profile_picture_preview');
+                output.src = reader.result;
+            };
+            reader.readAsDataURL(event.target.files[0]);
         });
-      </script>
-      
+        </script>
+      <form method="post" action="{{ url_for('profile') }}" >
       <div class="mb-4">
         <label class="block text-zinc-600 mb-1" for="name">Name</label>
         <input class="w-full px-3 py-2 border border-zinc-300 rounded" type="text" id="name" name="name" value="{{ session['donor_login']['name'] }}" />

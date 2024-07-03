@@ -18,10 +18,15 @@
         </li>
       </ul>
     </div>
-    <div class="flex items-center mb-6">
-      <img class="w-24 h-24 rounded-full mr-4" src="https://placehold.co/96x96" alt="User profile picture" />
-      <button class="bg-zinc-200 text-zinc-800 py-2 px-4 rounded">Change</button>
-    </div>
+    <form method="post" action="{{ url_for('upload_image2') }}" enctype="multipart/form-data">
+      <div class="flex items-center mb-6">
+        <input type="file" id="profile_picture" name="profile_picture"  accept="image/*">
+        <input type="submit" value="Upload" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+        <label for="profile_picture" class="cursor-pointer">
+          <img id="profile_picture_preview " class="w-24 h-24 rounded-full mr-4" src="{{ url_for('display_image2') }}" alt="Profile Picture" />
+        </label>
+      </div>
+      </form>
     <form method="post" action="{{url_for('profile2')}}">
       <div class="mb-4">
         <label class="block text-zinc-600 mb-1" for="name">Name</label>
