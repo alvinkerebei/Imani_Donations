@@ -2,53 +2,130 @@
 
 {% block content %}
 
-  <body>
-    <div class="flex items-center justify-center min-h-screen bg-zinc-100">
-  <div class="bg-white rounded-lg shadow-lg p-8 max-w-lg w-full">
-    <div class="flex justify-between items-center mb-6">
-      <h2 class="text-2xl font-semibold text-zinc-800">Account Setting</h2>
-      <button class="text-zinc-400 hover:text-zinc-600">
-        <img aria-hidden="true" alt="close" src="https://openui.fly.dev/openui/24x24.svg?text=✖" href="{{url_for('doneehome')}}" />
-      </button>
+<body>
+  <div class="flex items-center justify-center min-h-screen bg-zinc-100">
+    <div class="bg-white rounded-lg shadow-lg p-8 max-w-lg w-full">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-semibold text-zinc-800">Account Setting</h2>
+        <button class="text-zinc-400 hover:text-zinc-600">
+          <img aria-hidden="true" alt="close" src="https://openui.fly.dev/openui/24x24.svg?text=✖" href="{{url_for('doneehome')}}" />
+        </button>
+      </div>
+      <div class="border-b border-zinc-200 mb-6">
+        <ul class="flex">
+          <li class="mr-6">
+            <a href="#profile" class="tab-link text-blue-500 border-b-2 border-blue-500 pb-2 inline-block">Donee Profile</a>
+          </li>
+          <li class="mr-6">
+            <a href="#payment" class="tab-link text-blue-500 border-b-2 border-blue-500 pb-2 inline-block">Payment</a>
+          </li>
+        </ul>
+      </div>
+      <div id="profile" class="tab-content">
+        <form method="post" action="{{ url_for('upload_image2') }}" enctype="multipart/form-data">
+          <div class="flex items-center mb-6">
+            <input type="file" id="profile_picture" name="profile_picture" accept="image/*" >
+            <input type="submit" value="Upload" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
+            <label for="profile_picture" class="cursor-pointer">
+              <img id="profile_picture_preview" class="w-24 h-24 rounded-full mr-4" src="{{ url_for('display_image2') }}" alt="Profile Picture" />
+            </label>
+          </div>
+        </form>
+        <form method="post" action="{{url_for('profile2')}}">
+          <div class="mb-4">
+            <label class="block text-zinc-600 mb-1" for="name">Name</label>
+            <input class="w-full px-3 py-2 border border-zinc-300 rounded" type="text" id="name" name="name" value="{{ session['donee_login']['name'] }}" />
+          </div>
+          <div class="mb-4">
+            <label class="block text-zinc-600 mb-1" for="email">Email</label>
+            <input class="w-full px-3 py-2 border border-zinc-300 rounded" type="email" id="email" name="email" value="{{ session['donee_login']['email'] }}" />
+          </div>
+          <div class="mb-4">
+            <label class="block text-zinc-600 mb-1" for="phone">Phone</label>
+            <input class="w-full px-3 py-2 border border-zinc-300 rounded" type="tel" id="phone" name="phone" value="{{ session['donee_login']['phone'] }}" />
+          </div>
+          <div class="mb-4">
+            <label class="block text-zinc-600 mb-1" for="website">Address</label>
+            <input class="w-full px-3 py-2 border border-zinc-300 rounded" type="text" id="website" name="address" value="{{ session['donee_login']['address'] }}" />
+          </div>
+          <div class="mb-4">
+            <label class="block text-zinc-600 mb-1" for="password">Password</label>
+            <input class="w-full px-3 py-2 border border-zinc-300 rounded" type="password" id="password" name="password" value="*****" />
+          </div>
+          <div class="flex justify-end">
+            <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Save</button>
+          </div>
+        </form>
+      </div>
+      <div id="payment" class="tab-content hidden">
+        <form method="post" action="{{ url_for('update_payment') }}">
+          <div class="mb-4">
+            <label class="block text-zinc-600 mb-1" for="payment_method">Payment Method</label>
+            <select class="w-full px-3 py-2 border border-zinc-300 rounded" id="account_type" name="account_type" onchange="togglePaymentFields()">
+              <option value="">Select Payment Method</option>
+              <option class="w-full px-3 py-2 border border-zinc-300 rounded" value="1" id="account_type" name="account_type">Buy Goods</option>
+              <option class="w-full px-3 py-2 border border-zinc-300 rounded" value="2" id="account_type" name="account_type">PayBill</option>
+            </select>
+          </div>
+          <div id="single_field" style="display: none;">
+            <div class="mb-4">
+              <label class="block text-zinc-600 mb-1" for="field1">Till Nummber</label>
+              <input class="w-full px-3 py-2 border border-zinc-300 rounded" type="number" id="till_number" name="till_number" />
+            </div>
+          </div>
+          <div id="double_field" style="display: none;">
+            <div class="mb-4">
+              <label class="block text-zinc-600 mb-1" for="field2">Business Number</label>
+              <input class="w-full px-3 py-2 border border-zinc-300 rounded" type="number" id="business_number" name="business_number" />
+            </div>
+            <div class="mb-4">
+              <label class="block text-zinc-600 mb-1" for="field3">Account Name</label>
+              <input class="w-full px-3 py-2 border border-zinc-300 rounded" type="text" id="account_name" name="account_name" />
+            </div>
+          </div>
+          <div class="flex justify-end">
+            <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Save </button>
+          </div>
+        </form>
+      </div>
     </div>
-    <div class="border-b border-zinc-200 mb-6">
-      <ul class="flex">
-        <li class="mr-6">
-          <a class="text-blue-500 border-b-2 border-blue-500 pb-2 inline-block" >Donee Profile</a>
-        </li>
-      </ul>
-    </div>
-    <div class="flex items-center mb-6">
-      <img class="w-24 h-24 rounded-full mr-4" src="https://placehold.co/96x96" alt="User profile picture" />
-      <button class="bg-zinc-200 text-zinc-800 py-2 px-4 rounded">Change</button>
-    </div>
-    <form method="post" action="{{url_for('profile2')}}">
-      <div class="mb-4">
-        <label class="block text-zinc-600 mb-1" for="name">Name</label>
-        <input class="w-full px-3 py-2 border border-zinc-300 rounded" type="text" id="name" name="name" value="{{ session['donee_login']['name'] }}" />
-      </div>
-      <div class="mb-4">
-        <label class="block text-zinc-600 mb-1" for="email">Email</label>
-        <input class="w-full px-3 py-2 border border-zinc-300 rounded" type="email" id="email" name="email" value="{{ session['donee_login']['email'] }}" />
-      </div>
-      <div class="mb-4">
-        <label class="block text-zinc-600 mb-1" for="phone">Phone</label>
-        <input class="w-full px-3 py-2 border border-zinc-300 rounded" type="tel" id="phone" name="phone" value="{{ session['donee_login']['phone'] }}" />
-      </div>
-      <div class="mb-4">
-        <label class="block text-zinc-600 mb-1" for="website">Address</label>
-        <input class="w-full px-3 py-2 border border-zinc-300 rounded" type="text" id="website" name="address" value="{{ session['donee_login']['address'] }}" />
-      </div>
-      <div class="mb-4">
-        <label class="block text-zinc-600 mb-1" for="password">Password</label>
-        <input class="w-full px-3 py-2 border border-zinc-300 rounded" type="password" id="password" name="password" value="*****" />
-      </div>
-      <div class="flex justify-end">
-        <button class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">Save</button>
-      </div>
-    </form>
   </div>
-</div>
-  </body>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const tabLinks = document.querySelectorAll(".tab-link");
+      const tabContents = document.querySelectorAll(".tab-content");
+
+      tabLinks.forEach(link => {
+        link.addEventListener("click", function(e) {
+          e.preventDefault();
+
+          tabLinks.forEach(link => link.classList.remove("text-blue-500", "border-blue-500"));
+          tabContents.forEach(content => content.classList.add("hidden"));
+
+          this.classList.add("text-blue-500", "border-blue-500");
+          const target = this.getAttribute("href").substring(1);
+          document.getElementById(target).classList.remove("hidden");
+        });
+      });
+    });
+    function togglePaymentFields() {
+      const paymentMethod = document.getElementById('account_type').value;
+      const singleField = document.getElementById('single_field');
+      const doubleField = document.getElementById('double_field');
+      if (paymentMethod === '1') {
+        singleField.style.display = 'block';
+        doubleField.style.display = 'none';
+      } else if (paymentMethod === '2') {
+        singleField.style.display = 'none';
+        doubleField.style.display = 'block';
+      } else {
+        singleField.style.display = 'none';
+        doubleField.style.display = 'none';
+      }
+    }
+  </script>
+</body>
+
 
   {% endblock %}
