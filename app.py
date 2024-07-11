@@ -1,6 +1,5 @@
 from email.mime.text import MIMEText
 from io import BytesIO
-from msilib import Binary
 from bson import Binary
 import requests
 import smtplib
@@ -85,13 +84,12 @@ def doneedash():
 
 @app.route('/donorhome/')
 def donorhome():
-    donee_profiles = list(db.donee.find())  # Query to fetch donee profiles from the database
-    for donee in donee_profiles:
-        donee['images'] = url_for('display', donee_email=str(donee['email']))  # Generating URL for images
+    profile_data = list(db.donee.find())  # Query to fetch donee profiles from the database
+    for donee in profile_data:
+        donee['images'] = url_for('display2', email=str(donee['email']))  # Generating URL for images
+
+    return render_template('donorhome.html', profile_data=profile_data)
     
-    return render_template('donorhome.html', donee_profiles=donee_profiles)
-
-
 @app.route('/doneehome/',methods=['GET','POST'])
 def doneehome():
     if request.method == 'GET':
@@ -409,60 +407,58 @@ def display_image():
 
 @app.route('/donor/make_donation', methods=['GET', 'POST'])
 def make_donation():
+    if 'donor_login' not in session:
+        flash("Login to see profile details")
+        return redirect(url_for('donor_login'))
+    
+    session['profile'] = list(db.donee.find())
+
+    donor = session['profile']
+
+    for donee in donor:
+        donee['images'] = url_for('display2', email=str(donee['email']))
+
     if request.method == 'POST':
         phone_number = request.form.get('phone_number')
         amount = request.form.get('amount')
+        account_type = request.form.get('payment_method')
+        business_number = request.form.get('business_number')
+        account_name = request.form.get('account_name')
+        till_number = request.form.get('till_number')     
         
-        # Ensure M-Pesa URLs are registered (you can move this to a one-time setup function)
-        register_mpesa_urls()
-        
-        # Initiate M-Pesa C2B payment
-        response = initiate_mpesa_payment(phone_number, amount)
-        
-        if response.status_code == 200:
-            flash("Payment request sent successfully.", "success")
-        else:
-            flash("Failed to initiate payment. Please try again.", "danger")
-        
-        return redirect(url_for('make_donation'))
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer 49bYpCxAeP6UAJo6prbIY4UGA0dD'
+        }
+
+        if account_type == '1':
+            payload = {
+                "ShortCode": 600997,
+                "CommandID": "CustomerBuyGoodsOnline",
+                "amount": amount,
+                "MSISDN": phone_number,
+                "BillRefNumber": "",
+            }
+            response = requests.post('https://sandbox.safaricom.co.ke/mpesa/c2b/v1/registerurl', headers=headers, json=payload)
+            print(response.text)
+
+        elif account_type == '2':
+            payload = {
+                "ShortCode": business_number,
+                "CommandID": "CustomerPayBillOnline",
+                "Amount": amount,
+                "Msisdn": phone_number,
+                "BillRefNumber": account_name
+            }
+            response = requests.post('https://sandbox.safaricom.co.ke/mpesa/c2b/v1/registerurl', headers=headers, json=payload)
+            print(response.text)
+
+            response = requests.post('https://sandbox.safaricom.co.ke/mpesa/c2b/v1/registerurl', headers=headers, json=payload)
+            return response
+
+        return redirect(url_for('donorhome'))
     
-    return render_template('donorhome.html')
-
-def register_mpesa_urls():
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer YOUR_ACCESS_TOKEN'
-    }
-
-    payload = {
-        "ShortCode": 600999,
-        "ResponseType": "Completed",
-        "ConfirmationURL": "https://yourdomain.com/confirmation",
-        "ValidationURL": "https://yourdomain.com/validation"
-    }
-
-    response = requests.post('https://sandbox.safaricom.co.ke/mpesa/c2b/v1/registerurl', headers=headers, json=payload)
-    if response.status_code == 200:
-        print("M-Pesa URLs registered successfully.")
-    else:
-        print("Failed to register M-Pesa URLs:", response.json())
-
-def initiate_mpesa_payment(phone_number, amount):
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer YOUR_ACCESS_TOKEN'
-    }
-
-    payload = {
-        "ShortCode": 600999,
-        "CommandID": "CustomerPayBillOnline",
-        "Amount": amount,
-        "Msisdn": phone_number,
-        "BillRefNumber": "Donation"
-    }
-
-    response = requests.post('https://sandbox.safaricom.co.ke/mpesa/c2b/v1/simulate', headers=headers, json=payload)
-    return response
+    return render_template('donorhome.html', donor=donor)
 
 @app.route('/donor/signout')
 def signout():
@@ -854,6 +850,40 @@ def display():
         
     else:
         return redirect(url_for('donorhome'))
+    
+@app.route('/display/<email>')
+def display2(email):
+    profile_data = db.donee.find_one({'email': email})
+    if profile_data and 'images' in profile_data:
+        image_data = profile_data['images']
+        return send_file(BytesIO(image_data), mimetype='image/jpeg')
+    else:
+       return redirect(url_for('static', filename='uploads/default.jpg'))
+    
+@app.route('/donee/update_payment', methods=["POST", "GET"])
+def update_payment():
+    if 'donee_login' not in session:
+        flash('User not logged in', 'error')
+        return redirect(url_for('donee_login'))
+    
+    donee = session.get('donee_login')
+        
+    if request.method == "POST":
+        account_type = request.form.get('account_type')
+        business_number = request.form.get('business_number')
+        account_name = request.form.get('account_name')
+        till_number = request.form.get('till_number')
+
+        update_data = {
+            'account_type': account_type,
+            'business_number': business_number,
+            'account_name': account_name,
+            'till_number': till_number,
+        }
+
+    db.donee.update_one({'_id': donee['_id']}, {'$set': update_data})
+
+    return redirect('profile2')
 
 
 @app.route('/donee/signout')
